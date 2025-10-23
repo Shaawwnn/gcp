@@ -2,6 +2,12 @@
 
 A simple TypeScript Express application designed to help me learn Google Cloud Run services.
 
+## Live Demo
+
+🌐 **Deployed Application**: [https://cloud-run-893652891651.asia-east1.run.app/](https://cloud-run-893652891651.asia-east1.run.app/)
+
+🐳 **Docker Image**: [https://hub.docker.com/repository/docker/shawnalberto/cloud-run/general](https://hub.docker.com/repository/docker/shawnalberto/cloud-run/general)
+
 ## Overview
 
 This project demonstrates how to:
@@ -87,6 +93,12 @@ docker build -t cloud-run .
 ### Run locally:
 ```bash
 docker run -p 8080:8080 cloud-run
+```
+
+### Pull and run the published image:
+```bash
+docker pull shawnalberto/cloud-run
+docker run -p 8080:8080 shawnalberto/cloud-run
 ```
 
 ## Google Cloud Run Deployment
