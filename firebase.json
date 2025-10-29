@@ -1,7 +1,7 @@
 {
   "functions": [
     {
-      "source": "cloud-run-functions",
+      "source": "cloud-run-functions/lib/index.js",
       "codebase": "default",
       "ignore": [
         "node_modules",
