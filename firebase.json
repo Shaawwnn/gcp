@@ -1,7 +1,7 @@
 {
   "functions": [
     {
-      "source": "functions",
+      "source": "cloud-run-functions",
       "codebase": "default",
       "ignore": [
         "node_modules",
@@ -11,8 +11,8 @@
         "*.local"
       ],
       "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run lint",
-        "npm --prefix \"$RESOURCE_DIR\" run build"
+        "yarn --cwd \"cloud-run-functions\" lint",
+        "yarn --cwd \"cloud-run-functions\" build"
       ]
     }
   ]
