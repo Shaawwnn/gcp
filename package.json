@@ -1,0 +1,28 @@
+{
+  "name": "gcp-learning-monorepo",
+  "version": "1.0.0",
+  "description": "GCP Learning Projects Monorepo",
+  "private": true,
+  "workspaces": [
+    "client",
+    "cloud-run",
+    "cloud-run-functions"
+  ],
+  "scripts": {
+    "emulators": "firebase emulators:start",
+    "emulators:functions": "firebase emulators:start --only functions",
+    "emulators:all": "firebase emulators:start --only functions,firestore",
+    "functions:build": "yarn --cwd cloud-run-functions build",
+    "functions:serve": "yarn --cwd cloud-run-functions serve",
+    "functions:deploy": "yarn --cwd cloud-run-functions deploy",
+    "client:dev": "yarn --cwd client dev",
+    "client:build": "yarn --cwd client build",
+    "client:start": "yarn --cwd client start",
+    "dev": "concurrently \"yarn emulators\" \"yarn client:dev\"",
+    "dev:functions": "concurrently \"yarn emulators:functions\" \"yarn client:dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "license": "MIT"
+}
