@@ -11,6 +11,10 @@ import { setGlobalOptions } from "firebase-functions";
 import { onDocumentCreated } from "firebase-functions/firestore";
 import { onCall, onRequest } from "firebase-functions/https";
 import * as logger from "firebase-functions/logger";
+import * as admin from "firebase-admin";
+
+// Initialize Firebase Admin
+admin.initializeApp();
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
@@ -33,7 +37,7 @@ export const helloWorld = onRequest((request, response) => {
   response.send("Hello from Cloud Run Functions!");
 });
 
-export const firestoreTrigger = onDocumentCreated("users", (event) => {
+export const firestoreTrigger = onDocumentCreated("todo_list/{id}", (event) => {
   const data = event.data?.data() as unknown;
   logger.log("data", data);
   logger.info("Firestore document created!🎇🎇🎇", { structuredData: true });
