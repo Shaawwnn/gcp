@@ -7,8 +7,9 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-import {setGlobalOptions} from "firebase-functions";
-import {onRequest} from "firebase-functions/https";
+import { setGlobalOptions } from "firebase-functions";
+import { onDocumentCreated } from "firebase-functions/firestore";
+import { onRequest } from "firebase-functions/https";
 import * as logger from "firebase-functions/logger";
 
 // Start writing functions
@@ -24,14 +25,16 @@ import * as logger from "firebase-functions/logger";
 // functions should each use functions.runWith({ maxInstances: 10 }) instead.
 // In the v1 API, each function can only serve one request per container, so
 // this will be the maximum concurrent request count.
-setGlobalOptions({maxInstances: 10});
+setGlobalOptions({ maxInstances: 10 });
 
 export const helloWorld = onRequest((request, response) => {
   logger.log("request.params", request.params);
-  logger.log("request.query", request.query);
-  logger.log("request.body", request.body);
-  logger.log("request.headers", request.headers);
-  logger.log("request.method", request.method);
-  logger.info("Hello logs!", {structuredData: true});
+  logger.info("Hello logs!", { structuredData: true });
   response.send("Hello from Cloud Run Functions!");
+});
+
+export const firestoreTrigger = onDocumentCreated("users", (event) => {
+  const data = event.data?.data() as unknown;
+  logger.log("data", data);
+  logger.info("Firestore document created!🎇🎇🎇", { structuredData: true });
 });
