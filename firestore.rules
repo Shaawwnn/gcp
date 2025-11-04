@@ -1,0 +1,11 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow read/write access to todo_list collection
+    // In production, you should add authentication checks
+    match /todo_list/{document=**} {
+      allow read, write: if true; // ⚠️ This project is only used for demo purposes 
+    }
+  }
+}
+
