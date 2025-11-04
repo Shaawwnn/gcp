@@ -9,7 +9,7 @@
 
 import { setGlobalOptions } from "firebase-functions";
 import { onDocumentCreated } from "firebase-functions/firestore";
-import { onRequest } from "firebase-functions/https";
+import { onCall, onRequest } from "firebase-functions/https";
 import * as logger from "firebase-functions/logger";
 
 // Start writing functions
@@ -37,4 +37,10 @@ export const firestoreTrigger = onDocumentCreated("users", (event) => {
   const data = event.data?.data() as unknown;
   logger.log("data", data);
   logger.info("Firestore document created!🎇🎇🎇", { structuredData: true });
+});
+
+export const onCallTrigger = onCall((request) => {
+  logger.log("request", request);
+  logger.info("onCallTrigger!🎇🎇🎇", { structuredData: true });
+  return { message: "Hello from onCallTrigger!🎇🎇🎇" };
 });
