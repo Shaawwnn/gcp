@@ -9,12 +9,19 @@
 
 import { setGlobalOptions } from "firebase-functions";
 import { onDocumentCreated } from "firebase-functions/firestore";
-import { onCall, onRequest } from "firebase-functions/https";
+import { HttpsError, onCall, onRequest } from "firebase-functions/https";
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
+import { FieldValue } from "firebase-admin/firestore";
 
 // Initialize Firebase Admin
 admin.initializeApp();
+
+interface Todo {
+  id: string;
+  title: string;
+  completed: boolean;
+}
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
@@ -31,20 +38,39 @@ admin.initializeApp();
 // this will be the maximum concurrent request count.
 setGlobalOptions({ maxInstances: 10 });
 
-export const helloWorld = onRequest((request, response) => {
-  logger.log("request.params", request.params);
-  logger.info("Hello logs!", { structuredData: true });
+// http triggered cloud function
+export const helloWorld = onRequest((_, response) => {
   response.send("Hello from Cloud Run Functions!");
 });
 
-export const firestoreTrigger = onDocumentCreated("todo_list/{id}", (event) => {
-  const data = event.data?.data() as unknown;
-  logger.log("data", data);
-  logger.info("Firestore document created!🎇🎇🎇", { structuredData: true });
-});
+// Firestore trigger to log the data when a document is created
+export const firestoreTrigger = onDocumentCreated(
+  "todo_list/{id}",
+  async (event) => {
+    const data = event.data?.data() as Todo;
+    logger.log("Firestore document created!🎇🎇🎇", data);
+    await admin
+      .firestore()
+      .collection("logs")
+      .doc(event.id)
+      .set({
+        data: data,
+        log: `Added a new todo: ${data.title}`,
+        timestamp: FieldValue.serverTimestamp(),
+      });
+  }
+);
 
-export const onCallTrigger = onCall((request) => {
-  logger.log("request", request);
+// Callable cloud function to get a cat image url based on the status code
+export const getCatImageUrl = onCall(async (request, response) => {
   logger.info("onCallTrigger!🎇🎇🎇", { structuredData: true });
-  return { message: "Hello from onCallTrigger!🎇🎇🎇" };
+  const statusCode = request.data.statusCode;
+  if (!statusCode) {
+    throw new HttpsError("invalid-argument", "Status code is required!🎇🎇🎇");
+  }
+
+  return {
+    message: "Hello from onCallTrigger!🎇🎇🎇",
+    catImageUrl: `https://http.cat/${statusCode}`,
+  };
 });
