@@ -1,4 +1,4 @@
-import { initializeApp, FirebaseApp } from "firebase/app";
+import { initializeApp, FirebaseApp, getApps } from "firebase/app";
 import {
   addDoc,
   collection,
@@ -7,6 +7,10 @@ import {
   getDoc,
   getDocs,
   getFirestore,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
 } from "firebase/firestore";
 import {
   getFunctions,
@@ -16,7 +20,9 @@ import {
 
 import { firebaseConfig } from "./firebaseConfig";
 
-const app: FirebaseApp = initializeApp(firebaseConfig);
+// Initialize Firebase app only if it hasn't been initialized
+const app: FirebaseApp =
+  getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 export const db = getFirestore(app);
 
 // Get Firebase Functions
@@ -58,4 +64,32 @@ export const addDocument = async <T extends Record<string, any>>(
   const collectionRef = collection(db, path);
   const docRef = await addDoc(collectionRef, data);
   return docRef.id;
+};
+
+export const streamCollection = <T>(
+  path: string,
+  callback: (data: T[]) => void
+) => {
+  const collectionQuery = query(
+    collection(db, path),
+    limit(10),
+    orderBy("timestamp", "desc")
+  );
+
+  const unsubscribe = onSnapshot(
+    collectionQuery,
+    (snapshot) => {
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as T[];
+      callback(data);
+    },
+    (error) => {
+      console.error("Error streaming collection:", error);
+      callback([]);
+    }
+  );
+
+  return unsubscribe;
 };
