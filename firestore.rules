@@ -6,6 +6,9 @@ service cloud.firestore {
     match /todo_list/{document=**} {
       allow read, write: if true; // ⚠️ This project is only used for demo purposes 
     }
+    match /logs/{document=**} {
+      allow read: if true; // ⚠️ This project is only used for demo purposes
+    }
   }
 }
 
