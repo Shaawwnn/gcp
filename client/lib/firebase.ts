@@ -11,6 +11,7 @@ import {
   onSnapshot,
   orderBy,
   query,
+  setDoc,
 } from "firebase/firestore";
 import {
   getFunctions,
@@ -60,10 +61,17 @@ export const getCollection = async <T>(path: string): Promise<T[] | null> => {
 export const addDocument = async <T extends Record<string, any>>(
   path: string,
   data: T
-): Promise<string> => {
+): Promise<void> => {
   const collectionRef = collection(db, path);
-  const docRef = await addDoc(collectionRef, data);
-  return docRef.id;
+  await addDoc(collectionRef, data);
+};
+
+export const updateDocument = async <T>(
+  path: string,
+  data: Partial<T>
+): Promise<void> => {
+  const docRef = doc(db, path);
+  await setDoc(docRef, data, { merge: true });
 };
 
 export const streamCollection = <T>(
