@@ -3,10 +3,11 @@
 import { addDocument, getCollection } from "@/lib/firebase";
 import { FormEvent, useEffect, useState } from "react";
 import { nanoid } from "nanoid";
-interface Todo {
+import { TodoListItem } from "./TodoListItem";
+export interface Todo {
   id: string;
   title: string;
-  completed: boolean;
+  isCompleted: boolean;
 }
 
 export const TodoList: React.FC = () => {
@@ -29,9 +30,9 @@ export const TodoList: React.FC = () => {
 
     setIsAdding(true);
     try {
-      await addDocument("todo_list", {
+      await addDocument<Todo>("todo_list", {
         title: newTodoTitle.trim(),
-        completed: false,
+        isCompleted: false,
         id: nanoid(10),
       });
       setNewTodoTitle("");
@@ -73,26 +74,7 @@ export const TodoList: React.FC = () => {
       ) : (
         <div className="space-y-2">
           {todos.map((todo) => (
-            <div
-              key={todo.id}
-              className="p-3 bg-zinc-100 dark:bg-zinc-800 rounded-lg flex items-center gap-3"
-            >
-              <input
-                type="checkbox"
-                checked={todo.completed || false}
-                readOnly
-                className="w-4 h-4 rounded"
-              />
-              <span
-                className={
-                  todo.completed
-                    ? "line-through text-zinc-500 dark:text-zinc-400 flex-1"
-                    : "text-black dark:text-zinc-50 flex-1"
-                }
-              >
-                {todo.title}
-              </span>
-            </div>
+            <TodoListItem {...todo} key={todo.id} />
           ))}
         </div>
       )}
