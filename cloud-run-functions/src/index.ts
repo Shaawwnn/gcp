@@ -8,7 +8,10 @@
  */
 
 import { setGlobalOptions } from "firebase-functions";
-import { onDocumentCreated } from "firebase-functions/firestore";
+import {
+  onDocumentCreated,
+  onDocumentUpdated,
+} from "firebase-functions/firestore";
 import { HttpsError, onCall, onRequest } from "firebase-functions/https";
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
@@ -20,7 +23,7 @@ admin.initializeApp();
 interface Todo {
   id: string;
   title: string;
-  completed: boolean;
+  isCompleted: boolean;
 }
 
 // Start writing functions
@@ -44,7 +47,7 @@ export const helloWorld = onRequest((_, response) => {
 });
 
 // Firestore trigger to log the data when a document is created
-export const firestoreTrigger = onDocumentCreated(
+export const firestoreOnCreateTrigger = onDocumentCreated(
   "todo_list/{id}",
   async (event) => {
     const data = event.data?.data() as Todo;
@@ -61,8 +64,32 @@ export const firestoreTrigger = onDocumentCreated(
   }
 );
 
+// Firestore trigger to log the activity when a document is updated
+export const firestoreOnUpdateTrigger = onDocumentUpdated(
+  "todo_list/{id}",
+  async (event) => {
+    const prev = event.data?.before.data() as Todo;
+    const data = event.data?.after.data() as Todo;
+    logger.log("Firestore document updated!🎇🎇🎇", data);
+
+    const isTodoCompleted = !prev.isCompleted && data.isCompleted;
+
+    if (!isTodoCompleted) return;
+
+    await admin
+      .firestore()
+      .collection("logs")
+      .doc(event.id)
+      .set({
+        data: data,
+        log: `Completed a task: ${data.title}`,
+        timestamp: FieldValue.serverTimestamp(),
+      });
+  }
+);
+
 // Callable cloud function to get a cat image url based on the status code
-export const getCatImageUrl = onCall(async (request, response) => {
+export const getCatImageUrl = onCall(async (request) => {
   logger.info("onCallTrigger!🎇🎇🎇", { structuredData: true });
   const statusCode = request.data.statusCode;
   if (!statusCode) {
