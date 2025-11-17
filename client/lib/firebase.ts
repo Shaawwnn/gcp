@@ -12,6 +12,7 @@ import {
   orderBy,
   query,
   setDoc,
+  updateDoc,
 } from "firebase/firestore";
 import {
   getFunctions,
@@ -61,9 +62,11 @@ export const getCollection = async <T>(path: string): Promise<T[] | null> => {
 export const addDocument = async <T extends Record<string, any>>(
   path: string,
   data: T
-): Promise<void> => {
-  const collectionRef = collection(db, path);
-  await addDoc(collectionRef, data);
+): Promise<string> => {
+  const docRef = doc(collection(db, path));
+
+  await setDoc(docRef, { ...data, id: docRef.id });
+  return docRef.id;
 };
 
 export const updateDocument = async <T>(
@@ -71,7 +74,7 @@ export const updateDocument = async <T>(
   data: Partial<T>
 ): Promise<void> => {
   const docRef = doc(db, path);
-  await setDoc(docRef, data, { merge: true });
+  await updateDoc(docRef, data);
 };
 
 export const streamCollection = <T>(

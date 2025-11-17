@@ -2,7 +2,6 @@
 
 import { addDocument, getCollection } from "@/lib/firebase";
 import { FormEvent, useEffect, useState } from "react";
-import { nanoid } from "nanoid";
 import { TodoListItem } from "./TodoListItem";
 export interface Todo {
   id: string;
@@ -30,11 +29,11 @@ export const TodoList: React.FC = () => {
 
     setIsAdding(true);
     try {
-      await addDocument<Todo>("todo_list", {
+      await addDocument<Omit<Todo, "id">>("todo_list", {
         title: newTodoTitle.trim(),
         isCompleted: false,
-        id: nanoid(10),
       });
+
       setNewTodoTitle("");
       await fetchTodos(); // Refresh the list
     } catch (error) {
