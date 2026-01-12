@@ -13,6 +13,7 @@ import {
   onDocumentUpdated,
 } from "firebase-functions/firestore";
 import { HttpsError, onCall, onRequest } from "firebase-functions/https";
+import { onSchedule } from "firebase-functions/scheduler";
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
@@ -100,4 +101,26 @@ export const getCatImageUrl = onCall(async (request) => {
     message: "Hello from onCallTrigger!🎇🎇🎇",
     catImageUrl: `https://http.cat/${statusCode}`,
   };
+});
+
+// Scheduled function that runs every 5 minutes
+export const scheduledTask = onSchedule("every 5 minutes", async () => {
+  logger.info("Scheduled function executed!⏰", { structuredData: true });
+
+  const executionData = {
+    message: "Scheduled task executed successfully",
+    executionTime: new Date().toISOString(),
+    timestamp: FieldValue.serverTimestamp(),
+    status: "success",
+    details: {
+      functionName: "scheduledTask",
+      schedule: "every 5 minutes",
+      environment: process.env.ENVIRONMENT,
+    },
+  };
+
+  // Log execution to Firestore
+  await admin.firestore().collection("scheduled_executions").add(executionData);
+
+  logger.info("Scheduled execution logged to Firestore", executionData);
 });

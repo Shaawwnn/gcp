@@ -9,6 +9,9 @@ service cloud.firestore {
     match /logs/{document=**} {
       allow read: if true; // ⚠️ This project is only used for demo purposes
     }
+    match /scheduled_executions/{document=**} {
+      allow read: if true; // ⚠️ This project is only used for demo purposes
+    }
   }
 }
 
