@@ -103,19 +103,32 @@ export const getCatImageUrl = onCall(async (request) => {
   };
 });
 
-// Scheduled function that runs every 5 minutes
-export const scheduledTask = onSchedule("every 5 minutes", async () => {
+// Scheduled function that runs on the 15th day of every month at midnight UTC
+export const scheduledTask = onSchedule("0 0 15 * *", async () => {
   logger.info("Scheduled function executed!⏰", { structuredData: true });
 
+  const now = new Date();
   const executionData = {
-    message: "Scheduled task executed successfully",
-    executionTime: new Date().toISOString(),
+    message: "Monthly scheduled task executed successfully",
+    executionTime: now.toISOString(),
     timestamp: FieldValue.serverTimestamp(),
     status: "success",
+    executionDate: {
+      year: now.getFullYear(),
+      month: now.getMonth() + 1, // 1-12
+      day: now.getDate(),
+      dayOfWeek: now.toLocaleDateString("en-US", { weekday: "long" }),
+    },
     details: {
       functionName: "scheduledTask",
-      schedule: "every 5 minutes",
-      environment: process.env.ENVIRONMENT,
+      schedule: "0 0 15 * * (15th of every month at midnight UTC)",
+      cronExpression: "0 0 15 * *",
+      environment: process.env.ENVIRONMENT || "production",
+      timezone: "UTC",
+    },
+    metrics: {
+      executionDuration: 0, // Can be calculated if needed
+      memoryUsage: process.memoryUsage().heapUsed,
     },
   };
 
