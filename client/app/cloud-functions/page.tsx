@@ -1,5 +1,6 @@
 import CallableFunctionSection from "@/components/CallableFunctionSection";
 import FirestoreTriggerSection from "@/components/FirestoreTriggerSection";
+import ScheduledFunctionSection from "@/components/ScheduledFunctionSection";
 import Link from "next/link";
 
 export default function CloudFunctionsPage() {
@@ -64,6 +65,8 @@ export default function CloudFunctionsPage() {
         </div>
 
         <CallableFunctionSection />
+
+        <ScheduledFunctionSection />
 
         <FirestoreTriggerSection />
       </div>
