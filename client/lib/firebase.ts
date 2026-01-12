@@ -79,12 +79,14 @@ export const updateDocument = async <T>(
 
 export const streamCollection = <T>(
   path: string,
-  callback: (data: T[]) => void
+  callback: (data: T[]) => void,
+  options?: { limit?: number }
 ) => {
+  const limitCount = options?.limit ?? 10;
   const collectionQuery = query(
     collection(db, path),
-    limit(10),
-    orderBy("timestamp", "desc")
+    orderBy("timestamp", "desc"),
+    limit(limitCount)
   );
 
   const unsubscribe = onSnapshot(

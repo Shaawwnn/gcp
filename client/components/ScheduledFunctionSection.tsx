@@ -10,10 +10,22 @@ interface ScheduledExecution {
   executionTime: string;
   timestamp: Timestamp;
   status: string;
+  executionDate?: {
+    year: number;
+    month: number;
+    day: number;
+    dayOfWeek: string;
+  };
   details: {
     functionName: string;
     schedule: string;
+    cronExpression?: string;
     environment: string;
+    timezone?: string;
+  };
+  metrics?: {
+    executionDuration: number;
+    memoryUsage: number;
   };
 }
 
@@ -27,13 +39,14 @@ export default function ScheduledFunctionSection() {
       (data) => {
         setExecutions(data);
         setIsLoading(false);
-      }
+      },
+      { limit: 1 } // Only fetch the latest execution
     );
 
     return () => unsubscribe();
   }, []);
 
-  const lastExecution = executions[0]; // First one is the most recent (ordered by timestamp desc)
+  const lastExecution = executions[0];
 
   return (
     <div className="bg-white dark:bg-zinc-900 rounded-lg p-6 shadow-sm mb-6">
@@ -42,8 +55,9 @@ export default function ScheduledFunctionSection() {
       </h2>
       <p className="text-zinc-700 dark:text-zinc-300 mb-4">
         This Cloud Function runs automatically on a schedule using a cron
-        expression. It executes every 5 minutes and logs each execution to
-        Firestore. Watch the execution history update in real-time below.
+        expression. It executes on the 15th day of every month at midnight UTC
+        and logs each execution to Firestore. The latest execution is displayed
+        below and updates in real-time.
       </p>
 
       <div className="mb-4">
@@ -54,7 +68,13 @@ export default function ScheduledFunctionSection() {
           <li>
             Schedule:{" "}
             <code className="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded text-sm">
-              every 5 minutes
+              15th of every month at midnight UTC
+            </code>
+          </li>
+          <li>
+            Cron Expression:{" "}
+            <code className="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded text-sm">
+              0 0 15 * *
             </code>
           </li>
           <li>
@@ -72,72 +92,57 @@ export default function ScheduledFunctionSection() {
         </ul>
       </div>
 
-      {lastExecution && (
-        <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-          <h3 className="font-semibold text-black dark:text-zinc-50 mb-2">
-            Last Execution:
-          </h3>
-          <div className="space-y-1 text-sm text-zinc-700 dark:text-zinc-300">
-            <p>
-              <span className="font-semibold">Time:</span>{" "}
-              {lastExecution.timestamp
-                ? lastExecution.timestamp.toDate().toLocaleString()
-                : lastExecution.executionTime}
-            </p>
-            <p>
-              <span className="font-semibold">Status:</span>{" "}
-              <span className="text-green-600 dark:text-green-400">
-                {lastExecution.status}
-              </span>
-            </p>
-            <p>
-              <span className="font-semibold">Message:</span>{" "}
-              {lastExecution.message}
-            </p>
-          </div>
-        </div>
-      )}
-
       <div>
         <h3 className="font-semibold text-black dark:text-zinc-50 mb-2">
-          Execution History (Last 10):
+          Latest Execution:
         </h3>
         {isLoading ? (
           <p className="text-zinc-500 dark:text-zinc-400 text-center py-4">
-            Loading executions...
+            Loading execution...
           </p>
         ) : executions.length === 0 ? (
           <p className="text-zinc-500 dark:text-zinc-400 text-center py-4">
-            No executions yet. The function will run every 5 minutes.
+            No executions yet. The function will run on the 15th of every month
+            at midnight UTC.
           </p>
         ) : (
-          <div className="space-y-2 max-h-64 overflow-y-auto">
-            {executions.map((execution) => (
-              <div
-                key={execution.id}
-                className="p-3 bg-zinc-100 dark:bg-zinc-800 rounded-lg border-l-4 border-blue-500"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-black dark:text-zinc-50">
-                      {execution.message}
+          <div className="p-4 bg-zinc-100 dark:bg-zinc-800 rounded-lg border-l-4 border-blue-500">
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-black dark:text-zinc-50 mb-2">
+                  {lastExecution.message}
+                </p>
+                <div className="space-y-1 text-xs text-zinc-600 dark:text-zinc-400">
+                  <p>
+                    <span className="font-semibold">Time:</span>{" "}
+                    {lastExecution.timestamp
+                      ? lastExecution.timestamp.toDate().toLocaleString()
+                      : lastExecution.executionTime}
+                  </p>
+                  {lastExecution.executionDate && (
+                    <p>
+                      <span className="font-semibold">Date:</span>{" "}
+                      {lastExecution.executionDate.dayOfWeek},{" "}
+                      {lastExecution.executionDate.month}/
+                      {lastExecution.executionDate.day}/
+                      {lastExecution.executionDate.year}
                     </p>
-                    <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1">
-                      {execution.timestamp
-                        ? execution.timestamp.toDate().toLocaleString()
-                        : execution.executionTime}
+                  )}
+                  {lastExecution.details?.environment && (
+                    <p>
+                      <span className="font-semibold">Environment:</span>{" "}
+                      {lastExecution.details.environment}
                     </p>
-                  </div>
-                  <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 rounded">
-                    {execution.status}
-                  </span>
+                  )}
                 </div>
               </div>
-            ))}
+              <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 rounded whitespace-nowrap">
+                {lastExecution.status}
+              </span>
+            </div>
           </div>
         )}
       </div>
     </div>
   );
 }
-
