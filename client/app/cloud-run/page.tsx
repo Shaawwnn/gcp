@@ -1,3 +1,7 @@
+import ApiTester from "@/components/ApiTester";
+import EchoTester from "@/components/EchoTester";
+import EndpointListItem from "@/components/EndpointListItem";
+
 export default function CloudRunPage() {
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black p-8">
@@ -44,41 +48,62 @@ export default function CloudRunPage() {
           </div>
         </div>
 
+        <div className="bg-white dark:bg-zinc-900 rounded-lg p-6 shadow-sm mb-6">
+          <h2 className="text-2xl font-semibold text-black dark:text-zinc-50 mb-4">
+            Interactive API Tester
+          </h2>
+          <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            Test the Cloud Run API endpoints directly from your browser. Select
+            an endpoint and see the response in real-time.
+          </p>
+          <div className="border-t border-zinc-200 dark:border-zinc-800 pt-4">
+            <ApiTester />
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-zinc-900 rounded-lg p-6 shadow-sm mb-6">
+          <h2 className="text-2xl font-semibold text-black dark:text-zinc-50 mb-4">
+            Echo Endpoint Tester
+          </h2>
+          <p className="text-zinc-700 dark:text-zinc-300 mb-4">
+            Test the POST /echo endpoint by sending custom JSON data. The
+            endpoint will echo back your request body and headers.
+          </p>
+          <div className="border-t border-zinc-200 dark:border-zinc-800 pt-4">
+            <EchoTester />
+          </div>
+        </div>
+
         <div className="bg-white dark:bg-zinc-900 rounded-lg p-6 shadow-sm">
           <h2 className="text-2xl font-semibold text-black dark:text-zinc-50 mb-4">
-            API Endpoints
+            Available Endpoints
           </h2>
           <ul className="space-y-3 text-zinc-700 dark:text-zinc-300">
-            <li>
-              <code className="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded">
-                GET /
-              </code>
-              - Hello world endpoint with service info
-            </li>
-            <li>
-              <code className="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded">
-                GET /health
-              </code>
-              - Health check endpoint
-            </li>
-            <li>
-              <code className="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded">
-                GET /info
-              </code>
-              - Detailed service information
-            </li>
-            <li>
-              <code className="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded">
-                POST /echo
-              </code>
-              - Echo back request data
-            </li>
-            <li>
-              <code className="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded">
-                GET /env
-              </code>
-              - Display environment variables
-            </li>
+            <EndpointListItem
+              method="GET"
+              path="/"
+              description="Hello world endpoint with service info"
+            />
+            <EndpointListItem
+              method="GET"
+              path="/health"
+              description="Health check endpoint"
+            />
+            <EndpointListItem
+              method="GET"
+              path="/info"
+              description="Detailed service information"
+            />
+            <EndpointListItem
+              method="POST"
+              path="/echo"
+              description="Echo back request data"
+            />
+            <EndpointListItem
+              method="GET"
+              path="/env"
+              description="Display environment variables"
+            />
           </ul>
         </div>
       </div>
