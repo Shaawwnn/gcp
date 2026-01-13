@@ -7,10 +7,10 @@ service cloud.firestore {
       allow read, write: if true; // ⚠️ This project is only used for demo purposes 
     }
     match /logs/{document=**} {
-      allow read: if true; // ⚠️ This project is only used for demo purposes
+      allow read, write: if true; // ⚠️ This project is only used for demo purposes
     }
     match /scheduled_executions/{document=**} {
-      allow read: if true; // ⚠️ This project is only used for demo purposes
+      allow read, write: if true; // ⚠️ This project is only used for demo purposes
     }
   }
 }

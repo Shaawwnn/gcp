@@ -18,6 +18,9 @@
     "client:dev": "yarn --cwd client dev",
     "client:build": "yarn --cwd client build",
     "client:start": "yarn --cwd client start",
+    "hosting:build": "yarn --cwd client build",
+    "hosting:deploy": "firebase deploy --only hosting",
+    "deploy:all": "firebase deploy",
     "dev": "concurrently \"yarn emulators\" \"yarn client:dev\"",
     "dev:functions": "concurrently \"yarn emulators:functions\" \"yarn client:dev\""
   },
