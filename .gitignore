@@ -130,6 +130,11 @@ Thumbs.db
 service-account-key.json
 *.key.json
 
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+
 # Docker
 .dockerignore
 
