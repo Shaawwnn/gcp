@@ -20,6 +20,18 @@ service firebase.storage {
       allow update: if true;
     }
     
+    // Picture of the Day folder - single shared picture
+    match /picture-of-the-day/{fileName} {
+      // Allow anyone to read the picture
+      allow read: if true;
+      
+      // Allow anyone to upload/replace the picture (max 10MB)
+      allow create, write: if request.resource.size < 10 * 1024 * 1024;
+      
+      // Allow anyone to delete
+      allow delete: if true;
+    }
+    
     // For production, use authentication-based rules like this:
     /*
     match /demo/{fileName} {
@@ -46,4 +58,3 @@ service firebase.storage {
     }
   }
 }
-

@@ -80,12 +80,14 @@ export const updateDocument = async <T>(
 export const streamCollection = <T>(
   path: string,
   callback: (data: T[]) => void,
-  options?: { limit?: number }
+  options?: { limit?: number; orderByField?: string }
 ) => {
   const limitCount = options?.limit ?? 10;
+  const orderByField = options?.orderByField ?? "timestamp";
+  
   const collectionQuery = query(
     collection(db, path),
-    orderBy("timestamp", "desc"),
+    orderBy(orderByField, "desc"),
     limit(limitCount)
   );
 

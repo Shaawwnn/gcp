@@ -16,5 +16,9 @@ service cloud.firestore {
     match /pubsub_messages/{document=**} {
       allow read, write: if true; // ⚠️ This project is only used for demo purposes
     }
+    // Picture of the Day metadata
+    match /picture_of_the_day/{document=**} {
+      allow read, write: if true; // ⚠️ This project is only used for demo purposes
+    }
   }
 }

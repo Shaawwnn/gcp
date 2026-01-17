@@ -3,7 +3,7 @@ import {
   ref, 
   uploadBytesResumable, 
   getDownloadURL,
-  listAll,
+  list,
   deleteObject,
   getMetadata,
   connectStorageEmulator 
@@ -16,11 +16,9 @@ export const storage = getStorage(app);
 // Connect to Storage emulator in development
 if (process.env.NODE_ENV === "development" && typeof window !== "undefined") {
   if (process.env.NEXT_PUBLIC_USE_FUNCTIONS_EMULATOR === "true") {
-    try {
+
       connectStorageEmulator(storage, "127.0.0.1", 9199);
-    } catch (error) {
-      // Emulator already connected, ignore error
-    }
+
   }
 }
 
@@ -39,10 +37,20 @@ export interface StorageFile extends FileMetadata {
 // Upload a file to Cloud Storage
 export const uploadFile = async (
   file: File,
-  onProgress?: (progress: number) => void
+  onProgress?: (progress: number) => void,
+  customPath?: string // Optional custom path
 ): Promise<string> => {
-  const timestamp = Date.now();
-  const fileName = `demo/${timestamp}-${file.name}`;
+  let fileName: string;
+  
+  if (customPath) {
+    // Use custom path if provided
+    fileName = customPath;
+  } else {
+    // Default behavior: upload to demo folder with timestamp
+    const timestamp = Date.now();
+    fileName = `demo/${timestamp}-${file.name}`;
+  }
+  
   const storageRef = ref(storage, fileName);
   
   return new Promise((resolve, reject) => {
@@ -71,31 +79,52 @@ export const uploadFile = async (
   });
 };
 
-// List all files in storage (direct from client)
-export const listFiles = async (): Promise<StorageFile[]> => {
+// List all files in storage (direct from client) with limit protection
+export const listFiles = async (maxResults: number = 100): Promise<StorageFile[]> => {
   const listRef = ref(storage, "demo/");
   
   try {
-    const result = await listAll(listRef);
+    // Use list() with maxResults instead of listAll() to prevent loading too many files
+    const result = await list(listRef, { maxResults });
+    
+    // Limit to prevent excessive API calls
+    const itemsToProcess = result.items.slice(0, maxResults);
     
     // Get metadata for each file
     const filesWithMetadata = await Promise.all(
-      result.items.map(async (itemRef) => {
-        const metadata = await getMetadata(itemRef);
-        const downloadUrl = await getDownloadURL(itemRef);
-        
-        return {
-          name: itemRef.fullPath,
-          size: metadata.size || 0,
-          contentType: metadata.contentType || "unknown",
-          timeCreated: metadata.timeCreated || "",
-          updated: metadata.updated || "",
-          downloadUrl,
-        };
+      itemsToProcess.map(async (itemRef) => {
+        try {
+          const metadata = await getMetadata(itemRef);
+          const downloadUrl = await getDownloadURL(itemRef);
+          
+          return {
+            name: itemRef.fullPath,
+            size: metadata.size || 0,
+            contentType: metadata.contentType || "unknown",
+            timeCreated: metadata.timeCreated || "",
+            updated: metadata.updated || "",
+            downloadUrl,
+          };
+        } catch (error) {
+          console.error(`Error getting metadata for ${itemRef.fullPath}:`, error);
+          // Return basic info if metadata fails
+          return {
+            name: itemRef.fullPath,
+            size: 0,
+            contentType: "unknown",
+            timeCreated: "",
+            updated: "",
+            downloadUrl: undefined,
+          };
+        }
       })
     );
     
-    return filesWithMetadata;
+    // Sort by newest first
+    return filesWithMetadata.sort((a, b) => {
+      if (!a.timeCreated || !b.timeCreated) return 0;
+      return new Date(b.timeCreated).getTime() - new Date(a.timeCreated).getTime();
+    });
   } catch (error) {
     console.error("Error listing files:", error);
     throw error;
@@ -125,6 +154,11 @@ export const getSignedUrl = async (
 
 // Delete a file from storage (direct from client)
 export const deleteFile = async (fileName: string): Promise<void> => {
+  // Validate fileName
+  if (!fileName || fileName.trim() === '' || fileName === '/') {
+    throw new Error('Invalid file path for deletion');
+  }
+  
   const fileRef = ref(storage, fileName);
   
   try {
