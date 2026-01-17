@@ -11,7 +11,7 @@
   "scripts": {
     "emulators": "firebase emulators:start --import=.firebase/emulator-data --export-on-exit=.firebase/emulator-data",
     "emulators:functions": "firebase emulators:start --only functions --import=.firebase/emulator-data --export-on-exit=.firebase/emulator-data",
-    "emulators:all": "firebase emulators:start --only functions,firestore,pubsub --import=.firebase/emulator-data --export-on-exit=.firebase/emulator-data",
+    "emulators:all": "firebase emulators:start --only functions,firestore,pubsub,storage --import=.firebase/emulator-data --export-on-exit=.firebase/emulator-data",
     "functions:build": "yarn --cwd cloud-run-functions build",
     "functions:serve": "yarn --cwd cloud-run-functions serve",
     "functions:deploy": "yarn --cwd cloud-run-functions deploy",

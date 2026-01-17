@@ -4,25 +4,89 @@ This folder contains projects and experiments for learning Google Cloud Platform
 
 ## Overview
 
-This repository serves as a collection of hands-on projects, tutorials, and experiments to explore various GCP offerings including:
+This repository serves as a collection of hands-on projects, tutorials, and experiments to explore various GCP offerings.
 
-- Compute services (Compute Engine, App Engine, Cloud Functions)
-- Storage solutions (Cloud Storage, Cloud SQL, Firestore)
-- Networking (VPC, Load Balancing, Cloud CDN)
-- Data and Analytics (BigQuery, Cloud Dataflow, Pub/Sub)
-- Machine Learning (Vertex AI, AutoML)
-- Security and Identity (IAM, Cloud Security Command Center)
-- And more!
+## Current Demos
+
+### 1. Cloud Run
+Serverless container deployment demo with interactive API testing.
+- Live endpoints
+- API documentation
+- Echo endpoint with custom JSON
+- Health checks and service info
+
+### 2. Cloud Functions (Firebase)
+Serverless function deployments with various triggers.
+- HTTP-triggered functions
+- Callable functions (getCatImageUrl)
+- Firestore triggers (onCreate, onUpdate)
+- Scheduled functions (cron jobs)
+
+### 3. Cloud Storage
+File storage and management with direct client-side operations.
+- **Direct file upload** from browser (drag & drop)
+- **List files** with metadata (size, type, date)
+- **Download files** using direct URLs
+- **Delete files** with confirmation
+- Storage security rules for access control
+
+**Architecture Highlight**: Uses **client-side Firebase Storage SDK** for all operations (no Cloud Functions needed), making it faster and more cost-effective. Only signed URLs require server-side generation.
 
 ## Getting Started
 
-Each subfolder in this repository represents a different GCP service or learning module. Feel free to explore and experiment with the various projects contained within.
-
-## Prerequisites
-
+### Prerequisites
+- Node.js 22+
+- Yarn
+- Firebase CLI (`npm install -g firebase-tools`)
 - Google Cloud Platform account
-- gcloud CLI installed and configured
-- Basic understanding of cloud computing concepts
+
+### Installation
+
+```bash
+# Install dependencies
+yarn install
+
+# Start Firebase emulators and client dev server
+yarn dev
+
+# Or start all emulators including Storage
+yarn emulators:all
+```
+
+### Development URLs
+- **Client**: http://localhost:3000
+- **Firebase Emulator UI**: http://localhost:4000
+- **Functions**: http://localhost:5001
+- **Firestore**: http://localhost:8080
+- **Storage**: http://localhost:9199
+
+## Project Structure
+
+```
+gcp/
+├── client/              # Next.js frontend
+│   ├── app/            # Pages (Cloud Run, Functions, Storage)
+│   ├── components/     # React components
+│   └── lib/           # Firebase config & utilities
+├── cloud-run/          # Cloud Run service (Express)
+├── cloud-run-functions/ # Firebase Cloud Functions
+├── firebase.json       # Firebase configuration
+├── firestore.rules     # Firestore security rules
+└── storage.rules       # Cloud Storage security rules
+```
+
+## Deployment
+
+```bash
+# Deploy functions
+yarn functions:deploy
+
+# Deploy hosting
+yarn hosting:deploy
+
+# Deploy everything
+yarn deploy:all
+```
 
 ## Contributing
 

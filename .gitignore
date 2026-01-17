@@ -151,3 +151,6 @@ coverage/
 # Misc
 *.tgz
 *.tar.gz
+
+# Project tracking
+DEMOS.md
