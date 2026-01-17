@@ -21,6 +21,7 @@ Serverless function deployments with various triggers.
 - Callable functions (getCatImageUrl)
 - Firestore triggers (onCreate, onUpdate)
 - Scheduled functions (cron jobs)
+- Pub/Sub triggers for message processing
 
 ### 3. Cloud Storage
 File storage and management with direct client-side operations.
@@ -31,6 +32,16 @@ File storage and management with direct client-side operations.
 - Storage security rules for access control
 
 **Architecture Highlight**: Uses **client-side Firebase Storage SDK** for all operations (no Cloud Functions needed), making it faster and more cost-effective. Only signed URLs require server-side generation.
+
+### 4. Pub/Sub
+Real-time messaging service with event-driven architecture.
+- **Publish messages** to topics with custom attributes
+- **Real-time message viewer** showing processing status
+- **Cloud Function subscriber** that processes messages automatically
+- **Firestore integration** for message persistence and status tracking
+- Visual flow diagram showing message lifecycle
+
+**Architecture Highlight**: Demonstrates asynchronous message processing with real-time UI updates via Firestore listeners.
 
 ## Getting Started
 
