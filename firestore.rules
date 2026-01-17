@@ -12,6 +12,9 @@ service cloud.firestore {
     match /scheduled_executions/{document=**} {
       allow read, write: if true; // ⚠️ This project is only used for demo purposes
     }
+    // Pub/Sub message collection
+    match /pubsub_messages/{document=**} {
+      allow read, write: if true; // ⚠️ This project is only used for demo purposes
+    }
   }
 }
-
