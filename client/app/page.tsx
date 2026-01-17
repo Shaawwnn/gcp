@@ -1,5 +1,28 @@
 import Link from "next/link";
 
+interface DemoCardProps {
+  href: string;
+  title: string;
+  description: string;
+}
+
+function DemoCard({ href, title, description }: DemoCardProps) {
+  return (
+    <Link
+      href={href}
+      className="bg-white dark:bg-zinc-900 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow"
+    >
+      <h2 className="text-2xl font-semibold text-black dark:text-zinc-50 mb-3">
+        {title}
+      </h2>
+      <p className="text-zinc-600 dark:text-zinc-400 mb-4">{description}</p>
+      <span className="text-blue-600 dark:text-blue-400 font-medium">
+        View Demo →
+      </span>
+    </Link>
+  );
+}
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black p-8">
@@ -9,43 +32,27 @@ export default function Home() {
         </h1>
         <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-8">
           Welcome to the Google Cloud Platform learning project demos. Explore
-          Cloud Run and Cloud Functions services through interactive
-          demonstrations.
+          various GCP services through interactive demonstrations.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Link
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <DemoCard
             href="/cloud-run"
-            className="bg-white dark:bg-zinc-900 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow"
-          >
-            <h2 className="text-2xl font-semibold text-black dark:text-zinc-50 mb-3">
-              Cloud Run Demo
-            </h2>
-            <p className="text-zinc-600 dark:text-zinc-400 mb-4">
-              Explore serverless container deployments with Google Cloud Run.
-              View live endpoints, API documentation, and deployment
-              information.
-            </p>
-            <span className="text-blue-600 dark:text-blue-400 font-medium">
-              View Demo →
-            </span>
-          </Link>
+            title="Cloud Run Demo"
+            description="Explore serverless container deployments with Google Cloud Run. View live endpoints, API documentation, and deployment information."
+          />
 
-          <Link
+          <DemoCard
             href="/cloud-functions"
-            className="bg-white dark:bg-zinc-900 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow"
-          >
-            <h2 className="text-2xl font-semibold text-black dark:text-zinc-50 mb-3">
-              Cloud Functions Demo
-            </h2>
-            <p className="text-zinc-600 dark:text-zinc-400 mb-4">
-              Learn about Firebase Cloud Functions and serverless function
-              deployments. Discover available functions and their capabilities.
-            </p>
-            <span className="text-blue-600 dark:text-blue-400 font-medium">
-              View Demo →
-            </span>
-          </Link>
+            title="Cloud Functions Demo"
+            description="Learn about Firebase Cloud Functions and serverless function deployments. Discover available functions and their capabilities."
+          />
+
+          <DemoCard
+            href="/cloud-storage"
+            title="Cloud Storage Demo"
+            description="Explore Google Cloud Storage with file upload, download, and management. Learn about signed URLs and storage operations."
+          />
         </div>
       </div>
     </div>
