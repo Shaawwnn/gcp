@@ -53,6 +53,12 @@ export default function Home() {
             title="Cloud Storage Demo"
             description="Explore Google Cloud Storage with file upload, download, and management. Learn about signed URLs and storage operations."
           />
+
+          <DemoCard
+            href="/pubsub"
+            title="Pub/Sub Demo"
+            description="Discover Google Cloud Pub/Sub messaging service. Publish messages, view real-time processing, and learn about event-driven architecture."
+          />
         </div>
       </div>
     </div>

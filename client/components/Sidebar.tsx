@@ -11,6 +11,7 @@ export default function Sidebar() {
     { href: "/cloud-run", label: "Cloud Run Demo" },
     { href: "/cloud-functions", label: "Cloud Functions Demo" },
     { href: "/cloud-storage", label: "Cloud Storage Demo" },
+    { href: "/pubsub", label: "Pub/Sub Demo" },
   ];
 
   // Normalize pathname by removing trailing slash
