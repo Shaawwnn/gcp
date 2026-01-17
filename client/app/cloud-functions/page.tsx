@@ -3,6 +3,11 @@ import FirestoreTriggerSection from "@/components/FirestoreTriggerSection";
 import ScheduledFunctionSection from "@/components/ScheduledFunctionSection";
 import Link from "next/link";
 
+interface SectionCardProps {
+  title: string;
+  children: React.ReactNode;
+}
+
 export default function CloudFunctionsPage() {
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black p-8">
@@ -15,10 +20,7 @@ export default function CloudFunctionsPage() {
           deployments.
         </p>
 
-        <div className="bg-white dark:bg-zinc-900 rounded-lg p-6 shadow-sm mb-6">
-          <h2 className="text-2xl font-semibold text-black dark:text-zinc-50 mb-4">
-            About Cloud Functions
-          </h2>
+        <SectionCard title="About Cloud Functions">
           <p className="text-zinc-700 dark:text-zinc-300 mb-4">
             Firebase Cloud Functions lets you run backend code that responds to
             events triggered by Firebase features and HTTPS requests. Your code
@@ -36,12 +38,9 @@ export default function CloudFunctionsPage() {
               </ul>
             </div>
           </div>
-        </div>
+        </SectionCard>
 
-        <div className="bg-white dark:bg-zinc-900 rounded-lg p-6 shadow-sm mb-6">
-          <h2 className="text-2xl font-semibold text-black dark:text-zinc-50 mb-4">
-            HTTP Triggered Functions
-          </h2>
+        <SectionCard title="HTTP Triggered Functions">
           <div className="space-y-4">
             <div className="border-l-4 border-blue-600 pl-4">
               <Link
@@ -62,7 +61,7 @@ export default function CloudFunctionsPage() {
               </Link>
             </div>
           </div>
-        </div>
+        </SectionCard>
 
         <CallableFunctionSection />
 
@@ -70,6 +69,17 @@ export default function CloudFunctionsPage() {
 
         <FirestoreTriggerSection />
       </div>
+    </div>
+  );
+}
+
+function SectionCard({ title, children }: SectionCardProps) {
+  return (
+    <div className="bg-white dark:bg-zinc-900 rounded-lg p-6 shadow-sm mb-6">
+      <h2 className="text-2xl font-semibold text-black dark:text-zinc-50 mb-4">
+        {title}
+      </h2>
+      {children}
     </div>
   );
 }
