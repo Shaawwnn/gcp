@@ -14,12 +14,17 @@ import {
 } from "firebase-functions/firestore";
 import { HttpsError, onCall, onRequest } from "firebase-functions/https";
 import { onSchedule } from "firebase-functions/scheduler";
+import { onMessagePublished } from "firebase-functions/pubsub";
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
+import { PubSub } from "@google-cloud/pubsub";
 
 // Initialize Firebase Admin
 admin.initializeApp();
+
+// Initialize Pub/Sub
+const pubsub = new PubSub();
 
 interface Todo {
   id: string;
@@ -186,3 +191,96 @@ export const getSignedUrl = onCall(async (request) => {
     );
   }
 });
+
+// Pub/Sub Functions
+
+// Callable function to publish a message to a Pub/Sub topic
+export const publishMessage = onCall(async (request) => {
+  const { topic, message, attributes } = request.data;
+
+  if (!topic || !message) {
+    throw new HttpsError(
+      "invalid-argument",
+      "Topic and message are required"
+    );
+  }
+
+  try {
+    logger.info(`Publishing message to topic: ${topic}`, { message, attributes });
+
+    // Store the message in Firestore for the UI to display
+    const messageDoc = await admin
+      .firestore()
+      .collection("pubsub_messages")
+      .add({
+        topic,
+        message,
+        attributes: attributes || {},
+        status: "published",
+        publishedAt: FieldValue.serverTimestamp(),
+        processedAt: null,
+      });
+
+    // Publish to Pub/Sub topic
+    await pubsub.topic(topic).publishMessage({
+      json: { message, messageId: messageDoc.id },
+      attributes: attributes || {},
+    });
+
+    return {
+      success: true,
+      messageId: messageDoc.id,
+      message: "Message published successfully",
+    };
+  } catch (error) {
+    logger.error("Error publishing message:", error);
+    throw new HttpsError(
+      "internal",
+      "Failed to publish message",
+      error instanceof Error ? error.message : "Unknown error"
+    );
+  }
+});
+
+// Pub/Sub trigger to process messages
+export const processPubSubMessage = onMessagePublished(
+  "demo-topic",
+  async (event) => {
+    const messageData = event.data.message;
+    const data = messageData.json;
+    const attributes = messageData.attributes;
+
+    logger.info("Pub/Sub message received!", {
+      data,
+      attributes,
+      messageId: event.id,
+    });
+
+    try {
+      // Wait 5 seconds before processing (so you can see the status change in UI)
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+
+      // Update the message in Firestore to show it was processed
+      if (data.messageId) {
+        await admin
+          .firestore()
+          .collection("pubsub_messages")
+          .doc(data.messageId)
+          .update({
+            status: "processed",
+            processedAt: FieldValue.serverTimestamp(),
+            processingDetails: {
+              messageId: event.id,
+              publishTime: messageData.publishTime,
+              attributes,
+            },
+          });
+      }
+
+      logger.info("Message processed successfully", { messageId: event.id });
+    } catch (error) {
+      logger.error("Error processing message:", error);
+      throw error;
+    }
+  }
+);
