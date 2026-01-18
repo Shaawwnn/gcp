@@ -1,286 +1,64 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * import {onCall} from "firebase-functions/v2/https";
- * import {onDocumentWritten} from "firebase-functions/v2/firestore";
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
-
 import { setGlobalOptions } from "firebase-functions";
-import {
-  onDocumentCreated,
-  onDocumentUpdated,
-} from "firebase-functions/firestore";
-import { HttpsError, onCall, onRequest } from "firebase-functions/https";
+import { onDocumentCreated, onDocumentUpdated } from "firebase-functions/firestore";
+import { onCall, onRequest } from "firebase-functions/https";
 import { onSchedule } from "firebase-functions/scheduler";
 import { onMessagePublished } from "firebase-functions/pubsub";
-import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
-import { FieldValue } from "firebase-admin/firestore";
-import { PubSub } from "@google-cloud/pubsub";
 
 // Initialize Firebase Admin
 admin.initializeApp();
 
-// Initialize Pub/Sub
-const pubsub = new PubSub();
-
-interface Todo {
-  id: string;
-  title: string;
-  isCompleted: boolean;
-}
-
-// Start writing functions
-// https://firebase.google.com/docs/functions/typescript
-
-// For cost control, you can set the maximum number of containers that can be
-// running at the same time. This helps mitigate the impact of unexpected
-// traffic spikes by instead downgrading performance. This limit is a
-// per-function limit. You can override the limit for each function using the
-// `maxInstances` option in the function's options, e.g.
-// `onRequest({ maxInstances: 5 }, (req, res) => { ... })`.
-// NOTE: setGlobalOptions does not apply to functions using the v1 API. V1
-// functions should each use functions.runWith({ maxInstances: 10 }) instead.
-// In the v1 API, each function can only serve one request per container, so
-// this will be the maximum concurrent request count.
+// Set global options for all functions
 setGlobalOptions({ maxInstances: 10 });
 
-// http triggered cloud function
-export const helloWorld = onRequest((_, response) => {
-  response.send("Hello from Cloud Run Functions!");
-});
+// Import handlers
+import { helloWorldHandler } from "./handlers/http.handlers";
+import { onTodoCreatedHandler, onTodoUpdatedHandler } from "./handlers/firestore.handlers";
+import { getCatImageUrlHandler, getSignedUrlHandler } from "./handlers/callable.handlers";
+import { scheduledTaskHandler } from "./handlers/scheduler.handlers";
+import { publishMessageHandler, processPubSubMessageHandler } from "./handlers/pubsub.handlers";
 
-// Firestore trigger to log the data when a document is created
+// ============================================================================
+// HTTP Functions
+// ============================================================================
+
+export const helloWorld = onRequest(helloWorldHandler);
+
+// ============================================================================
+// Firestore Triggers
+// ============================================================================
+
 export const firestoreOnCreateTrigger = onDocumentCreated(
   "todo_list/{id}",
-  async (event) => {
-    const data = event.data?.data() as Todo;
-    logger.log("Firestore document created!🎇🎇🎇", data);
-    await admin
-      .firestore()
-      .collection("logs")
-      .doc(event.id)
-      .set({
-        data: data,
-        log: `Added a new todo: ${data.title}`,
-        timestamp: FieldValue.serverTimestamp(),
-      });
-  }
+  onTodoCreatedHandler
 );
 
-// Firestore trigger to log the activity when a document is updated
 export const firestoreOnUpdateTrigger = onDocumentUpdated(
   "todo_list/{id}",
-  async (event) => {
-    const prev = event.data?.before.data() as Todo;
-    const data = event.data?.after.data() as Todo;
-    logger.log("Firestore document updated!🎇🎇🎇", data);
-
-    const isTodoCompleted = !prev.isCompleted && data.isCompleted;
-
-    if (!isTodoCompleted) return;
-
-    await admin
-      .firestore()
-      .collection("logs")
-      .doc(event.id)
-      .set({
-        data: data,
-        log: `Completed a task: ${data.title}`,
-        timestamp: FieldValue.serverTimestamp(),
-      });
-  }
+  onTodoUpdatedHandler
 );
 
-// Callable cloud function to get a cat image url based on the status code
-export const getCatImageUrl = onCall(async (request) => {
-  logger.info("onCallTrigger!🎇🎇🎇", { structuredData: true });
-  const statusCode = request.data.statusCode;
-  if (!statusCode) {
-    throw new HttpsError("invalid-argument", "Status code is required!🎇🎇🎇");
-  }
+// ============================================================================
+// Callable Functions
+// ============================================================================
 
-  return {
-    message: "Hello from onCallTrigger!🎇🎇🎇",
-    catImageUrl: `https://http.cat/${statusCode}`,
-  };
-});
+export const getCatImageUrl = onCall(getCatImageUrlHandler);
 
-// Scheduled function that runs on the 15th day of every month at midnight UTC
-export const scheduledTask = onSchedule("0 0 15 * *", async () => {
-  logger.info("Scheduled function executed!⏰", { structuredData: true });
+export const getSignedUrl = onCall(getSignedUrlHandler);
 
-  const now = new Date();
-  const executionData = {
-    message: "Monthly scheduled task executed successfully",
-    executionTime: now.toISOString(),
-    timestamp: FieldValue.serverTimestamp(),
-    status: "success",
-    executionDate: {
-      year: now.getFullYear(),
-      month: now.getMonth() + 1, // 1-12
-      day: now.getDate(),
-      dayOfWeek: now.toLocaleDateString("en-US", { weekday: "long" }),
-    },
-    details: {
-      functionName: "scheduledTask",
-      schedule: "0 0 15 * * (15th of every month at midnight UTC)",
-      cronExpression: "0 0 15 * *",
-      environment: process.env.ENVIRONMENT || "production",
-      timezone: "UTC",
-    },
-    metrics: {
-      executionDuration: 0, // Can be calculated if needed
-      memoryUsage: process.memoryUsage().heapUsed,
-    },
-  };
+export const publishMessage = onCall(publishMessageHandler);
 
-  // Log execution to Firestore
-  await admin.firestore().collection("scheduled_executions").add(executionData);
+// ============================================================================
+// Scheduled Functions
+// ============================================================================
 
-  logger.info("Scheduled execution logged to Firestore", executionData);
-});
+export const scheduledTask = onSchedule("0 0 15 * *", scheduledTaskHandler);
 
-// Cloud Storage Functions
-const bucket = admin.storage().bucket();
+// ============================================================================
+// Pub/Sub Triggers
+// ============================================================================
 
-// Generate a signed URL for downloading a file
-// Note: Most operations (list, delete, download) are now done directly from the client.
-// Signed URLs are kept as a Cloud Function because they require the Admin SDK for
-// custom expiration times and enhanced security.
-export const getSignedUrl = onCall(async (request) => {
-  const fileName = request.data.fileName;
-  const expiresIn = request.data.expiresIn || 3600; // Default 1 hour
-
-  if (!fileName) {
-    throw new HttpsError("invalid-argument", "File name is required");
-  }
-
-  try {
-    logger.info(`Generating signed URL for file: ${fileName}`);
-    const file = bucket.file(fileName);
-    
-    // Check if file exists
-    const [exists] = await file.exists();
-    if (!exists) {
-      throw new HttpsError("not-found", "File not found");
-    }
-
-    const [url] = await file.getSignedUrl({
-      action: "read",
-      expires: Date.now() + expiresIn * 1000,
-    });
-
-    return {
-      success: true,
-      url,
-      expiresIn,
-      fileName,
-    };
-  } catch (error) {
-    logger.error("Error generating signed URL:", error);
-    if (error instanceof HttpsError) {
-      throw error;
-    }
-    throw new HttpsError(
-      "internal",
-      "Failed to generate signed URL",
-      error instanceof Error ? error.message : "Unknown error"
-    );
-  }
-});
-
-// Pub/Sub Functions
-
-// Callable function to publish a message to a Pub/Sub topic
-export const publishMessage = onCall(async (request) => {
-  const { topic, message, attributes } = request.data;
-
-  if (!topic || !message) {
-    throw new HttpsError(
-      "invalid-argument",
-      "Topic and message are required"
-    );
-  }
-
-  try {
-    logger.info(`Publishing message to topic: ${topic}`, { message, attributes });
-
-    // Store the message in Firestore for the UI to display
-    const messageDoc = await admin
-      .firestore()
-      .collection("pubsub_messages")
-      .add({
-        topic,
-        message,
-        attributes: attributes || {},
-        status: "published",
-        publishedAt: FieldValue.serverTimestamp(),
-        processedAt: null,
-      });
-
-    // Publish to Pub/Sub topic
-    await pubsub.topic(topic).publishMessage({
-      json: { message, messageId: messageDoc.id },
-      attributes: attributes || {},
-    });
-
-    return {
-      success: true,
-      messageId: messageDoc.id,
-      message: "Message published successfully",
-    };
-  } catch (error) {
-    logger.error("Error publishing message:", error);
-    throw new HttpsError(
-      "internal",
-      "Failed to publish message",
-      error instanceof Error ? error.message : "Unknown error"
-    );
-  }
-});
-
-// Pub/Sub trigger to process messages
 export const processPubSubMessage = onMessagePublished(
   "demo-topic",
-  async (event) => {
-    const messageData = event.data.message;
-    const data = messageData.json;
-    const attributes = messageData.attributes;
-
-    logger.info("Pub/Sub message received!", {
-      data,
-      attributes,
-      messageId: event.id,
-    });
-
-    try {
-      // Wait 5 seconds before processing (so you can see the status change in UI)
-      await new Promise((resolve) => setTimeout(resolve, 5000));
-
-      // Update the message in Firestore to show it was processed
-      if (data.messageId) {
-        await admin
-          .firestore()
-          .collection("pubsub_messages")
-          .doc(data.messageId)
-          .update({
-            status: "processed",
-            processedAt: FieldValue.serverTimestamp(),
-            processingDetails: {
-              messageId: event.id,
-              publishTime: messageData.publishTime,
-              attributes,
-            },
-          });
-      }
-
-      logger.info("Message processed successfully", { messageId: event.id });
-    } catch (error) {
-      logger.error("Error processing message:", error);
-      throw error;
-    }
-  }
+  processPubSubMessageHandler
 );
