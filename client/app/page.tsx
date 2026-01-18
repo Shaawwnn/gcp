@@ -59,6 +59,12 @@ export default function Home() {
             title="Pub/Sub Demo"
             description="Discover Google Cloud Pub/Sub messaging service. Publish messages, view real-time processing, and learn about event-driven architecture."
           />
+
+          <DemoCard
+            href="/bigquery"
+            title="BigQuery Demo"
+            description="Run SQL queries on massive datasets using Google BigQuery. Explore public datasets and learn about serverless analytics."
+          />
         </div>
       </div>
     </div>
