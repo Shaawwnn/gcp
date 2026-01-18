@@ -4,11 +4,12 @@ FROM node:22-slim
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy package files
-COPY package.json yarn.lock ./
+# Copy package file
+COPY package.json ./
 
-# Install all dependencies (including dev dependencies for build)
-RUN yarn install --frozen-lockfile
+# Install dependencies
+# Note: Using workspace, so no yarn.lock in this directory
+RUN yarn install
 
 # Copy TypeScript configuration
 COPY tsconfig.json ./
@@ -20,7 +21,7 @@ COPY src/ ./src/
 RUN yarn build
 
 # Remove dev dependencies to reduce image size
-RUN yarn install --frozen-lockfile --production && yarn cache clean
+RUN yarn install --production && yarn cache clean
 
 # Create a non-root user to run the application
 RUN adduser --disabled-password --gecos '' app && chown -R app:app /app
