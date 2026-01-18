@@ -1,12 +1,14 @@
 import * as logger from "firebase-functions/logger";
-import { HttpsError } from "firebase-functions/https";
+import { HttpsError, CallableRequest } from "firebase-functions/https";
 import * as admin from "firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
 import { PubSub } from "@google-cloud/pubsub";
+import { CloudEvent } from "firebase-functions/v2";
+import { MessagePublishedData } from "firebase-functions/v2/pubsub";
 
 const pubsub = new PubSub();
 
-export const publishMessageHandler = async (request: any) => {
+export const publishMessageHandler = async (request: CallableRequest) => {
   const { topic, message, attributes } = request.data;
 
   if (!topic || !message) {
@@ -17,7 +19,10 @@ export const publishMessageHandler = async (request: any) => {
   }
 
   try {
-    logger.info(`Publishing message to topic: ${topic}`, { message, attributes });
+    logger.info(`Publishing message to topic: ${topic}`, {
+      message,
+      attributes,
+    });
 
     // Store the message in Firestore for the UI to display
     const messageDoc = await admin
@@ -53,7 +58,9 @@ export const publishMessageHandler = async (request: any) => {
   }
 };
 
-export const processPubSubMessageHandler = async (event: any) => {
+export const processPubSubMessageHandler = async (
+  event: CloudEvent<MessagePublishedData>
+) => {
   const messageData = event.data.message;
   const data = messageData.json;
   const attributes = messageData.attributes;
@@ -65,7 +72,7 @@ export const processPubSubMessageHandler = async (event: any) => {
   });
 
   try {
-    // Wait 5 seconds before processing (so you can see the status change in UI)
+    // Wait 5 seconds before processing
     await new Promise((resolve) => setTimeout(resolve, 5000));
 
     // Update the message in Firestore to show it was processed

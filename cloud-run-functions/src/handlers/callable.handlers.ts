@@ -1,13 +1,16 @@
 import * as logger from "firebase-functions/logger";
-import { HttpsError } from "firebase-functions/https";
+import { HttpsError, CallableRequest } from "firebase-functions/https";
 import * as admin from "firebase-admin";
 
-export const getCatImageUrlHandler = async (request: any) => {
+export const getCatImageUrlHandler = async (request: CallableRequest) => {
   logger.info("onCallTrigger!🎇🎇🎇", { structuredData: true });
   const statusCode = request.data.statusCode;
-  
+
   if (!statusCode) {
-    throw new HttpsError("invalid-argument", "Status code is required!🎇🎇🎇");
+    throw new HttpsError(
+      "invalid-argument",
+      "Status code is required!🎇🎇🎇"
+    );
   }
 
   return {
@@ -16,7 +19,7 @@ export const getCatImageUrlHandler = async (request: any) => {
   };
 };
 
-export const getSignedUrlHandler = async (request: any) => {
+export const getSignedUrlHandler = async (request: CallableRequest) => {
   const fileName = request.data.fileName;
   const expiresIn = request.data.expiresIn || 3600; // Default 1 hour
 
@@ -28,7 +31,7 @@ export const getSignedUrlHandler = async (request: any) => {
     logger.info(`Generating signed URL for file: ${fileName}`);
     const bucket = admin.storage().bucket();
     const file = bucket.file(fileName);
-    
+
     // Check if file exists
     const [exists] = await file.exists();
     if (!exists) {
