@@ -24,17 +24,20 @@ export const runBigQueryHandler = async (request: CallableRequest) => {
   const MAX_ROWS = 25;
   let modifiedQuery = sqlQuery.trim();
 
-  // Check if query has a LIMIT clause
-  const limitRegex = /\bLIMIT\s+\d+\s*$/i;
-  if (limitRegex.test(modifiedQuery)) {
-    // Replace existing LIMIT with our max
+  // Extract existing limit or use MAX_ROWS
+  const limitRegex = /\bLIMIT\s+(\d+)\s*$/i;
+  const limitMatch = modifiedQuery.match(limitRegex);
+  const userLimit = limitMatch ? parseInt(limitMatch[1], 10) : MAX_ROWS;
+  const effectiveLimit = Math.min(userLimit, MAX_ROWS);
+
+  // Apply the effective limit
+  if (limitMatch) {
     modifiedQuery = modifiedQuery.replace(
       limitRegex,
-      `LIMIT ${MAX_ROWS}`
+      `LIMIT ${effectiveLimit}`
     );
   } else {
-    // Add LIMIT if not present
-    modifiedQuery = `${modifiedQuery} LIMIT ${MAX_ROWS}`;
+    modifiedQuery += ` LIMIT ${effectiveLimit}`;
   }
 
   try {
