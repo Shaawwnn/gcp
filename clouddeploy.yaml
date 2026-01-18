@@ -23,3 +23,7 @@ steps:
       '--platform', 'managed',
       '--allow-unauthenticated'
     ]
+
+# Logging configuration (required when using custom service account)
+options:
+  logging: CLOUD_LOGGING_ONLY
