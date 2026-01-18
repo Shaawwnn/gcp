@@ -43,6 +43,16 @@ Real-time messaging service with event-driven architecture.
 
 **Architecture Highlight**: Demonstrates asynchronous message processing with real-time UI updates via Firestore listeners.
 
+### 5. BigQuery
+Serverless data warehouse for running SQL queries on massive datasets.
+- **Run SQL queries** on Google's public datasets
+- **Interactive query editor** with syntax highlighting
+- **Sample queries** for popular datasets (USA Names, COVID-19, Hacker News, etc.)
+- **Results table viewer** with automatic formatting
+- **Security validation** - only SELECT queries allowed
+
+**Architecture Highlight**: Uses callable Cloud Functions to execute BigQuery jobs and return results to the frontend.
+
 ## Getting Started
 
 ### Prerequisites

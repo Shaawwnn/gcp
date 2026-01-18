@@ -1,5 +1,8 @@
 import { setGlobalOptions } from "firebase-functions";
-import { onDocumentCreated, onDocumentUpdated } from "firebase-functions/firestore";
+import {
+  onDocumentCreated,
+  onDocumentUpdated,
+} from "firebase-functions/firestore";
 import { onCall, onRequest } from "firebase-functions/https";
 import { onSchedule } from "firebase-functions/scheduler";
 import { onMessagePublished } from "firebase-functions/pubsub";
@@ -13,10 +16,23 @@ setGlobalOptions({ maxInstances: 10 });
 
 // Import handlers
 import { helloWorldHandler } from "./handlers/http.handlers";
-import { onTodoCreatedHandler, onTodoUpdatedHandler } from "./handlers/firestore.handlers";
-import { getCatImageUrlHandler, getSignedUrlHandler } from "./handlers/callable.handlers";
+import {
+  onTodoCreatedHandler,
+  onTodoUpdatedHandler,
+} from "./handlers/firestore.handlers";
+import {
+  getCatImageUrlHandler,
+  getSignedUrlHandler,
+} from "./handlers/callable.handlers";
 import { scheduledTaskHandler } from "./handlers/scheduler.handlers";
-import { publishMessageHandler, processPubSubMessageHandler } from "./handlers/pubsub.handlers";
+import {
+  publishMessageHandler,
+  processPubSubMessageHandler,
+} from "./handlers/pubsub.handlers";
+import {
+  runBigQueryHandler,
+  listPublicDatasetsHandler,
+} from "./handlers/bigquery.handlers";
 
 // ============================================================================
 // HTTP Functions
@@ -47,6 +63,10 @@ export const getCatImageUrl = onCall(getCatImageUrlHandler);
 export const getSignedUrl = onCall(getSignedUrlHandler);
 
 export const publishMessage = onCall(publishMessageHandler);
+
+export const runBigQuery = onCall(runBigQueryHandler);
+
+export const listPublicDatasets = onCall(listPublicDatasetsHandler);
 
 // ============================================================================
 // Scheduled Functions
