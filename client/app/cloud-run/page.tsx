@@ -30,8 +30,8 @@ export default function CloudRunPage() {
           <div className="space-y-4">
             <LinkInfo
               label="Deployed Application URL:"
-              href="https://cloud-run-893652891651.asia-east1.run.app/"
-              displayText="https://cloud-run-893652891651.asia-east1.run.app/"
+              href="https://cloud-run-learning-893652891651.us-central1.run.app"
+              displayText="https://cloud-run-learning-893652891651.us-central1.run.app/"
             />
             <LinkInfo
               label="Docker Image:"

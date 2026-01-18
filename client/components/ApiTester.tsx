@@ -5,7 +5,7 @@ import EndpointButton from "./EndpointButton";
 import ErrorMessage from "./ErrorMessage";
 import ResponseDisplay from "./ResponseDisplay";
 
-const BASE_URL = "https://cloud-run-893652891651.asia-east1.run.app";
+const BASE_URL = "https://cloud-run-learning-893652891651.us-central1.run.app";
 
 interface Endpoint {
   path: string;
