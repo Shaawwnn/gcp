@@ -39,21 +39,9 @@ echo -e "${BLUE}Project ID:${NC} $PROJECT_ID"
 echo -e "${BLUE}Image:${NC} $FULL_IMAGE_NAME"
 echo ""
 
-# Build the image
-echo -e "${YELLOW}Building Docker image...${NC}"
-docker build -t "$FULL_IMAGE_NAME" builders/nextjs/
-
-if [ $? -eq 0 ]; then
-  echo -e "${GREEN}✅ Image built successfully${NC}"
-  echo ""
-else
-  echo -e "${YELLOW}❌ Build failed${NC}"
-  exit 1
-fi
-
-# Push to Artifact Registry
-echo -e "${YELLOW}Pushing to Artifact Registry...${NC}"
-docker push "$FULL_IMAGE_NAME"
+# Build and push the image (multi-platform for Cloud Build compatibility)
+echo -e "${YELLOW}Building and pushing Docker image for linux/amd64 and linux/arm64...${NC}"
+docker buildx build --platform linux/amd64,linux/arm64 -t "$FULL_IMAGE_NAME" --push builders/nextjs/
 
 if [ $? -eq 0 ]; then
   echo ""
