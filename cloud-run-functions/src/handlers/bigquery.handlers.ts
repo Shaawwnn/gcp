@@ -112,14 +112,6 @@ export const listPublicDatasetsHandler = async () => {
           "`bigquery-public-data.hacker_news.full` " +
           "WHERE type = 'story' ORDER BY score DESC LIMIT 10",
       },
-      {
-        id: "bigquery-public-data.new_york_citibike",
-        name: "NYC Citi Bike",
-        description: "New York City bike share data",
-        sampleQuery:
-          "SELECT * FROM " +
-          "`bigquery-public-data.new_york_citibike.citibike_trips` LIMIT 10",
-      },
     ];
 
     return {
