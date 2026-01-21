@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { runBigQuery, listPublicDatasets } from "@/lib/bigquery";
 
 interface BigQueryRow {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface PublicDataset {
@@ -232,7 +232,7 @@ function ErrorDisplay({ message }: { message: string }) {
   );
 }
 
-function formatValue(value: any): string {
+function formatValue(value: unknown): string {
   if (value === null || value === undefined) {
     return "NULL";
   }

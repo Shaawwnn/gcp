@@ -8,7 +8,7 @@ import ResponseDisplay from "./ResponseDisplay";
 const BASE_URL = "https://cloud-run-893652891651.asia-east1.run.app";
 
 interface EchoResponse {
-  echo: any;
+  echo: unknown;
   timestamp: string;
   headers: Record<string, string>;
 }
@@ -41,7 +41,7 @@ export default function EchoTester() {
     let parsedBody;
     try {
       parsedBody = JSON.parse(jsonInput);
-    } catch (err) {
+    } catch {
       setError("Invalid JSON. Please check your input.");
       setIsLoading(false);
       return;

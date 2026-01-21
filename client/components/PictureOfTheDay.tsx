@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import { uploadFile, formatFileSize, isImageFile, deleteFile } from "@/lib/storage";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, getDocs, query, orderBy, limit, deleteDoc, doc } from "firebase/firestore";
@@ -266,11 +267,14 @@ function CurrentPictureDisplay({ picture, formatDate }: CurrentPictureDisplayPro
       <h3 className="text-xl font-semibold text-black dark:text-zinc-50 mb-4">
         Picture of the Day
       </h3>
-      <div className="mb-4 rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-        <img
+      <div className="mb-4 rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-800 relative w-full" style={{ minHeight: '200px' }}>
+        <Image
           src={picture.downloadUrl}
           alt="Picture of the Day"
+          width={800}
+          height={600}
           className="w-full h-auto max-h-96 object-contain"
+          style={{ width: '100%', height: 'auto' }}
         />
       </div>
       <div className="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">

@@ -10,7 +10,7 @@ export default function CloudStoragePage() {
           Cloud Storage Demo
         </h1>
         <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-8">
-          Explore Google Cloud Storage with a collaborative "Picture of the Day" feature.
+          Explore Google Cloud Storage with a collaborative &quot;Picture of the Day&quot; feature.
         </p>
 
         <div className="bg-white dark:bg-zinc-900 rounded-lg p-6 shadow-sm mb-6">
@@ -103,7 +103,7 @@ export default function CloudStoragePage() {
               <div>
                 <h3 className="font-semibold mb-1">Public Display</h3>
                 <p className="text-sm">
-                  Everyone sees the same picture. It's a collaborative, community-driven
+                  Everyone sees the same picture. It&apos;s a collaborative, community-driven
                   feature that demonstrates how Cloud Storage can power shared content.
                 </p>
               </div>

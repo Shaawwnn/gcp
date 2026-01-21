@@ -25,7 +25,7 @@ const GET_ENDPOINTS: Endpoint[] = [
 ];
 
 interface ApiResponse {
-  data: any;
+  data: unknown;
   status: number;
   responseTime: number;
   timestamp: string;

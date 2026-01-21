@@ -1,6 +1,5 @@
 import { initializeApp, FirebaseApp, getApps } from "firebase/app";
 import {
-  addDoc,
   collection,
   connectFirestoreEmulator,
   doc,
@@ -59,7 +58,7 @@ export const getCollection = async <T>(path: string): Promise<T[] | null> => {
   return null;
 };
 
-export const addDocument = async <T extends Record<string, any>>(
+export const addDocument = async <T extends Record<string, unknown>>(
   path: string,
   data: T
 ): Promise<string> => {

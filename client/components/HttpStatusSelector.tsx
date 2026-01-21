@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { httpsCallable } from "firebase/functions";
-import { functions } from "@/lib/firebase";
 import Image from "next/image";
 import { getCatImage } from "@/lib/callables";
 

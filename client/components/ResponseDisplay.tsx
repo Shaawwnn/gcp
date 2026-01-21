@@ -2,7 +2,7 @@ import JsonDisplay from "./JsonDisplay";
 
 interface ResponseDisplayProps {
   title: string;
-  data: any;
+  data: unknown;
   status?: number;
   responseTime?: number;
   children?: React.ReactNode;

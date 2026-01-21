@@ -4,9 +4,14 @@ import { useEffect, useState } from "react";
 import { streamCollection } from "@/lib/firebase";
 import { Timestamp } from "firebase/firestore";
 
+interface TodoData {
+  title: string;
+  id: string;
+}
+
 interface LogEntry {
   id: string;
-  data: any;
+  data?: TodoData;
   log: string;
   timestamp: Timestamp;
 }

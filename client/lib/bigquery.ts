@@ -2,7 +2,7 @@ import { httpsCallable } from "firebase/functions";
 import { functions } from "./firebase";
 
 interface BigQueryRow {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface RunQueryResponse {

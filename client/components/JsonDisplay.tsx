@@ -1,5 +1,5 @@
 interface JsonDisplayProps {
-  data: any;
+  data: unknown;
   title?: string;
 }
 
