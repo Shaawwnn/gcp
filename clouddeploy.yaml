@@ -1,7 +1,7 @@
 steps:
   # Step 1: Install workspace dependencies
   - id: 'install-dependencies'
-    name: 'node:22-slim'
+    name: 'node:22-alpine'
     entrypoint: 'yarn'
     args: ['install', '--frozen-lockfile']
 
