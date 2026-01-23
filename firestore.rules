@@ -20,5 +20,9 @@ service cloud.firestore {
     match /picture_of_the_day/{document=**} {
       allow read, write: if true; // ⚠️ This project is only used for demo purposes
     }
+    // Cloud Tasks collection
+    match /cloud_tasks/{document=**} {
+      allow read, write: if true; // ⚠️ This project is only used for demo purposes
+    }
   }
 }
