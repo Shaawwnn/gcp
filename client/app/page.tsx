@@ -61,6 +61,12 @@ export default function Home() {
           />
 
           <DemoCard
+            href="/cloud-tasks"
+            title="Cloud Tasks Demo"
+            description="Learn about Cloud Tasks for reliable, asynchronous task execution. Create tasks, schedule execution, and view processing status in real-time."
+          />
+
+          <DemoCard
             href="/bigquery"
             title="BigQuery Demo"
             description="Run SQL queries on massive datasets using Google BigQuery. Explore public datasets and learn about serverless analytics."

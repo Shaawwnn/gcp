@@ -12,6 +12,7 @@ export default function Sidebar() {
     { href: "/cloud-functions", label: "Cloud Functions Demo" },
     { href: "/cloud-storage", label: "Cloud Storage Demo" },
     { href: "/pubsub", label: "Pub/Sub Demo" },
+    { href: "/cloud-tasks", label: "Cloud Tasks Demo" },
     { href: "/bigquery", label: "BigQuery Demo" },
   ];
 
