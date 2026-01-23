@@ -33,6 +33,11 @@ import {
   runBigQueryHandler,
   listPublicDatasetsHandler,
 } from "./handlers/bigquery.handlers";
+import {
+  processTaskHandler,
+  createTaskHandler,
+  listTasksHandler,
+} from "./handlers/cloudtasks.handlers";
 
 // ============================================================================
 // HTTP Functions
@@ -67,6 +72,16 @@ export const publishMessage = onCall(publishMessageHandler);
 export const runBigQuery = onCall(runBigQueryHandler);
 
 export const listPublicDatasets = onCall(listPublicDatasetsHandler);
+
+// ============================================================================
+// Cloud Tasks Functions
+// ============================================================================
+
+export const processTask = onRequest(processTaskHandler);
+
+export const createTask = onCall(createTaskHandler);
+
+export const listTasks = onCall(listTasksHandler);
 
 // ============================================================================
 // Scheduled Functions
