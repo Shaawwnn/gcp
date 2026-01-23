@@ -43,7 +43,17 @@ Real-time messaging service with event-driven architecture.
 
 **Architecture Highlight**: Demonstrates asynchronous message processing with real-time UI updates via Firestore listeners.
 
-### 5. BigQuery
+### 5. Cloud Tasks
+Asynchronous task processing with guaranteed execution and retries.
+- **Create tasks** with various action types (send email, process image, generate report, etc.)
+- **Schedule delayed execution** - run tasks immediately or schedule for future
+- **Real-time status tracking** - watch tasks progress from queued → processing → completed
+- **Automatic retries** and rate limiting built into Cloud Tasks
+- **Task history viewer** showing all tasks with their results
+
+**Architecture Highlight**: Demonstrates queued, reliable task execution vs. Pub/Sub's fire-and-forget pattern. Perfect for background jobs that need guaranteed execution.
+
+### 6. BigQuery
 Serverless data warehouse for running SQL queries on massive datasets.
 - **Run SQL queries** on Google's public datasets
 - **Interactive query editor** with syntax highlighting
