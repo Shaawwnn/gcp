@@ -38,6 +38,10 @@ import {
   createTaskHandler,
   listTasksHandler,
 } from "./handlers/cloudtasks.handlers";
+import {
+  fetchLogsHandler,
+  getLogServicesHandler,
+} from "./handlers/logging.handlers";
 
 // ============================================================================
 // HTTP Functions
@@ -82,6 +86,14 @@ export const processTask = onRequest(processTaskHandler);
 export const createTask = onCall(createTaskHandler);
 
 export const listTasks = onCall(listTasksHandler);
+
+// ============================================================================
+// Cloud Logging Functions
+// ============================================================================
+
+export const fetchLogs = onCall(fetchLogsHandler);
+
+export const getLogServices = onCall(getLogServicesHandler);
 
 // ============================================================================
 // Scheduled Functions
