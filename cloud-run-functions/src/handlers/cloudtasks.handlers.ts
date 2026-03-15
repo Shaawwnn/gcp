@@ -1,14 +1,17 @@
-import { HttpsError } from "firebase-functions/v2/https";
-import { Request, Response } from "express";
-import { CloudTasksClient } from "@google-cloud/tasks";
+import { CallableRequest, HttpsError } from "firebase-functions/v2/https";
+import { Response } from "express";
+import { CloudTasksClient, protos } from "@google-cloud/tasks";
 import * as admin from "firebase-admin";
+import { Request } from "firebase-functions/v2/https";
 import { TaskAction } from "@shared/types";
 import type {
   CreateTaskRequest,
   CreateTaskResponse,
   ListTasksResponse,
+  TaskData,
 } from "@shared/types";
 import { TASK_TYPES } from "@shared/constants";
+export type CloudTask = protos.google.cloud.tasks.v2.ITask;
 
 // Initialize Cloud Tasks client
 const tasksClient = new CloudTasksClient();
@@ -19,10 +22,7 @@ const tasksClient = new CloudTasksClient();
  * @param {object} req - Express request object
  * @param {object} res - Express response object
  */
-export const processTaskHandler = async (
-  req: Request,
-  res: Response
-) => {
+export const processTaskHandler = async (req: Request, res: Response) => {
   console.log("Processing task:", {
     method: req.method,
     headers: req.headers,
@@ -30,15 +30,19 @@ export const processTaskHandler = async (
   });
 
   // Verify this is coming from Cloud Tasks (optional but recommended)
-  const taskName = req.headers["x-cloudtasks-taskname"];
-  const queueName = req.headers["x-cloudtasks-queuename"];
+  const taskName = req.headers["x-cloudtasks-taskname"] as string;
+  const queueName = req.headers["x-cloudtasks-queuename"] as string;
 
   if (!taskName || !queueName) {
     console.warn("Request not from Cloud Tasks");
   }
 
   try {
-    const { taskId, action, data } = req.body;
+    const { taskId, action, data } = req.body.data as {
+      taskId: string;
+      action: TaskAction;
+      data: TaskData;
+    };
 
     if (!taskId || !action) {
       res.status(400).json({
@@ -62,39 +66,39 @@ export const processTaskHandler = async (
 
     let result;
     switch (action) {
-    case TaskAction.SEND_EMAIL:
-      result = {
-        success: true,
-        message: `Email sent to ${data?.recipient || "unknown"}`,
-      };
-      break;
+      case TaskAction.SEND_EMAIL:
+        result = {
+          success: true,
+          message: `Email sent to ${data?.recipient || "unknown"}`,
+        };
+        break;
 
-    case TaskAction.PROCESS_IMAGE:
-      result = {
-        success: true,
-        message: `Image processed: ${data?.filename || "unknown"}`,
-      };
-      break;
+      case TaskAction.PROCESS_IMAGE:
+        result = {
+          success: true,
+          message: `Image processed: ${data?.filename || "unknown"}`,
+        };
+        break;
 
-    case TaskAction.GENERATE_REPORT:
-      result = {
-        success: true,
-        message: `Report generated for ${data?.reportType || "unknown"}`,
-      };
-      break;
+      case TaskAction.GENERATE_REPORT:
+        result = {
+          success: true,
+          message: `Report generated for ${data?.reportType || "unknown"}`,
+        };
+        break;
 
-    case TaskAction.BACKUP_DATA:
-      result = {
-        success: true,
-        message: `Backup completed for ${data?.dataType || "unknown"}`,
-      };
-      break;
+      case TaskAction.BACKUP_DATA:
+        result = {
+          success: true,
+          message: `Backup completed for ${data?.dataType || "unknown"}`,
+        };
+        break;
 
-    default:
-      result = {
-        success: true,
-        message: `Processed action: ${action}`,
-      };
+      default:
+        result = {
+          success: true,
+          message: `Processed action: ${action}`,
+        };
     }
 
     // Update task status to completed
@@ -137,7 +141,7 @@ export const processTaskHandler = async (
  * @return {Promise<CreateTaskResponse>} Response with task details
  */
 export const createTaskHandler = async (
-  request: any
+  request: CallableRequest,
 ): Promise<CreateTaskResponse> => {
   const requestData = request.data as CreateTaskRequest;
   const { action, data, scheduleDelaySeconds } = requestData;
@@ -153,19 +157,23 @@ export const createTaskHandler = async (
     const queue = "default"; // Using the default queue
 
     // Create task document in Firestore
-    const taskDoc = await admin.firestore().collection("cloud_tasks").add({
-      action,
-      data: data || {},
-      status: "queued",
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      scheduleDelaySeconds: scheduleDelaySeconds || 0,
-    });
+    const taskDoc = await admin
+      .firestore()
+      .collection("cloud_tasks")
+      .add({
+        action,
+        data: data || {},
+        status: "queued",
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        scheduleDelaySeconds: scheduleDelaySeconds || 0,
+      });
 
     const taskId = taskDoc.id;
 
     // Get the Cloud Function URL for processTask
     // In production, this would be your deployed function URL
-    const functionUrl = process.env.PROCESS_TASK_URL ||
+    const functionUrl =
+      process.env.PROCESS_TASK_URL ||
       `https://${location}-${project}.cloudfunctions.net/processTask`;
 
     if (!project) {
@@ -176,10 +184,7 @@ export const createTaskHandler = async (
     const parent = tasksClient.queuePath(project, location, queue);
 
     // Construct the task
-    const task: {
-      httpRequest: any;
-      scheduleTime?: { seconds: number };
-    } = {
+    const task: CloudTask = {
       httpRequest: {
         httpMethod: "POST",
         url: functionUrl,
@@ -191,7 +196,7 @@ export const createTaskHandler = async (
             taskId,
             action,
             data: data || {},
-          })
+          }),
         ).toString("base64"),
       },
     };
@@ -231,9 +236,8 @@ export const createTaskHandler = async (
     };
   } catch (error) {
     console.error("Error creating task:", error);
-    const errorMessage = error instanceof Error
-      ? error.message
-      : "Unknown error";
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
     throw new HttpsError("internal", `Failed to create task: ${errorMessage}`);
   }
 };
@@ -261,9 +265,8 @@ export const listTasksHandler = async (): Promise<ListTasksResponse> => {
     };
   } catch (error) {
     console.error("Error listing tasks:", error);
-    const errorMessage = error instanceof Error
-      ? error.message
-      : "Unknown error";
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
     throw new HttpsError("internal", `Failed to list tasks: ${errorMessage}`);
   }
 };
