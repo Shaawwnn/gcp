@@ -1,14 +1,18 @@
-import { CallableRequest, HttpsError } from "firebase-functions/v2/https";
+import {
+  CallableRequest,
+  HttpsError,
+  Request,
+} from "firebase-functions/v2/https";
 import { Response } from "express";
 import { CloudTasksClient, protos } from "@google-cloud/tasks";
 import * as admin from "firebase-admin";
-import { Request } from "firebase-functions/v2/https";
 import { TaskAction } from "@shared/types";
 import type {
   CreateTaskRequest,
   CreateTaskResponse,
   ListTasksResponse,
   TaskData,
+  CloudTask as SharedCloudTask,
 } from "@shared/types";
 import { TASK_TYPES } from "@shared/constants";
 export type CloudTask = protos.google.cloud.tasks.v2.ITask;
@@ -257,7 +261,7 @@ export const listTasksHandler = async (): Promise<ListTasksResponse> => {
     const tasks = tasksSnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
-    })) as any; // Type assertion needed for Firestore data
+    })) as SharedCloudTask[]; // Type assertion needed for Firestore data
 
     return {
       success: true,
