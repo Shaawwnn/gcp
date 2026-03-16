@@ -3,6 +3,7 @@
     {
       "source": "cloud-run-functions",
       "codebase": "default",
+      "runtime": "nodejs22",
       "ignore": [
         "node_modules",
         ".git",
@@ -11,6 +12,7 @@
         "*.local"
       ],
       "predeploy": [
+        "yarn --cwd \"shared\" build",
         "yarn --cwd \"cloud-run-functions\" lint",
         "yarn --cwd \"cloud-run-functions\" build"
       ]
