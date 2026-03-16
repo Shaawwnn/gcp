@@ -1,18 +1,22 @@
-import { setGlobalOptions } from "firebase-functions";
+import { setGlobalOptions } from "firebase-functions/v2";
 import {
   onDocumentCreated,
   onDocumentUpdated,
-} from "firebase-functions/firestore";
-import { onCall, onRequest } from "firebase-functions/https";
-import { onSchedule } from "firebase-functions/scheduler";
-import { onMessagePublished } from "firebase-functions/pubsub";
+} from "firebase-functions/v2/firestore";
+import { onCall, onRequest } from "firebase-functions/v2/https";
+import { onSchedule } from "firebase-functions/v2/scheduler";
+import { onMessagePublished } from "firebase-functions/v2/pubsub";
 import * as admin from "firebase-admin";
 
 // Initialize Firebase Admin
 admin.initializeApp();
 
-// Set global options for all functions
-setGlobalOptions({ maxInstances: 10 });
+// Set global options for all functions (Gen 2)
+setGlobalOptions({
+  maxInstances: 10,
+  region: "us-central1",
+  memory: "256MiB",
+});
 
 // Import handlers
 import { helloWorldHandler } from "./handlers/http.handlers";

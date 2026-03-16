@@ -1,5 +1,5 @@
 import * as logger from "firebase-functions/logger";
-import { HttpsError, CallableRequest } from "firebase-functions/https";
+import { HttpsError, CallableRequest } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 
 export const getCatImageUrlHandler = async (request: CallableRequest) => {

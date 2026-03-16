@@ -9,14 +9,9 @@
     "sourceMap": true,
     "strict": true,
     "target": "es2017",
-    "baseUrl": ".",
-    "paths": {
-      "@shared/*": ["../shared/*"]
-    }
+    "skipLibCheck": true
   },
   "compileOnSave": true,
-  "include": [
-    "src",
-    "../shared/**/*"
-  ]
+  "include": ["src"],
+  "exclude": ["node_modules", "lib"]
 }

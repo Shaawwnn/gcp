@@ -1,4 +1,4 @@
-import { Request } from "firebase-functions/https";
+import { Request } from "firebase-functions/v2/https";
 import { Response } from "express";
 
 export const helloWorldHandler = (_: Request, response: Response) => {
