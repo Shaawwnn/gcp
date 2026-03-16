@@ -23,6 +23,13 @@
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
+        "source": "/api/helloWorld",
+        "function": {
+          "functionId": "helloWorld",
+          "pinTag": true
+        }
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
