@@ -6,12 +6,13 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "outDir": "lib",
+    "rootDir": ".",
     "sourceMap": true,
     "strict": true,
     "target": "es2017",
     "skipLibCheck": true
   },
   "compileOnSave": true,
-  "include": ["src"],
+  "include": ["src", "shared"],
   "exclude": ["node_modules", "lib"]
 }

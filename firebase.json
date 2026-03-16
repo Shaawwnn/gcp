@@ -12,7 +12,6 @@
         "*.local"
       ],
       "predeploy": [
-        "yarn --cwd \"shared\" build",
         "yarn --cwd \"cloud-run-functions\" build"
       ]
     }

@@ -4,7 +4,6 @@
   "description": "GCP Learning Projects Monorepo",
   "private": true,
   "workspaces": [
-    "shared",
     "client",
     "cloud-run",
     "cloud-run-functions"
