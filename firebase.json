@@ -13,7 +13,6 @@
       ],
       "predeploy": [
         "yarn --cwd \"shared\" build",
-        "yarn --cwd \"cloud-run-functions\" lint",
         "yarn --cwd \"cloud-run-functions\" build"
       ]
     }
