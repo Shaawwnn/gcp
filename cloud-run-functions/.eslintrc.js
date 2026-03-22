@@ -28,5 +28,6 @@ module.exports = {
     "object-curly-spacing": ["error", "always"],
     "indent": "off",
     "operator-linebreak": "off",
+    "max-len": "off",
   },
 };

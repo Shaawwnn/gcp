@@ -11,9 +11,7 @@
         "firebase-debug.*.log",
         "*.local"
       ],
-      "predeploy": [
-        "yarn --cwd \"cloud-run-functions\" build"
-      ]
+      "predeploy": ["yarn --cwd \"cloud-run-functions\" build"]
     }
   ],
   "hosting": {
