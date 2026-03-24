@@ -51,7 +51,7 @@ import {
 // HTTP Functions
 // ============================================================================
 
-export const helloWorld = onRequest(helloWorldHandler);
+export const helloWorldV2 = onRequest(helloWorldHandler);
 
 // ============================================================================
 // Firestore Triggers

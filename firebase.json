@@ -21,7 +21,14 @@
       {
         "source": "/api/helloWorld",
         "function": {
-          "functionId": "helloWorld",
+          "functionId": "helloWorldV2",
+          "pinTag": true
+        }
+      },
+      {
+        "source": "/callable/getCat",
+        "function": {
+          "functionId": "getCatImageUrl",
           "pinTag": true
         }
       },
