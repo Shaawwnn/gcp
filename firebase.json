@@ -47,7 +47,8 @@
           }
         ]
       }
-    ]
+    ],
+    "predeploy": ["yarn --cwd \"client\" build"]
   },
   "firestore": {
     "rules": "firestore.rules"
