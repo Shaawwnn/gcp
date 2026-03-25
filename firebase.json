@@ -26,9 +26,10 @@
         }
       },
       {
-        "source": "/callable/getCat",
-        "function": {
-          "functionId": "getCatImageUrl",
+        "source": "/**",
+        "run": {
+          "serviceId": "cloud-run-learning",
+          "region": "us-central1",
           "pinTag": true
         }
       },
