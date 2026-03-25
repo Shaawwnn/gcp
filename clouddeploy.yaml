@@ -6,32 +6,32 @@ steps:
     args: ['install', '--frozen-lockfile']
 
   # Step 2: Build Cloud Run Docker image (commented out for free tier)
-  # - id: 'build-cloud-run'
-  #   name: 'gcr.io/cloud-builders/docker'
-  #   args: [
-  #     'build',
-  #     '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/cloud-run-learning:$BUILD_ID',
-  #     '.'
-  #   ]
-  #   dir: 'cloud-run'
+  - id: 'build-cloud-run'
+    name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build',
+      '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/cloud-run-learning:$BUILD_ID',
+      '.'
+    ]
+    dir: 'cloud-run'
 
   # Step 3: Push image to Artifact Registry (commented out for free tier)
-  # - id: 'push-cloud-run'
-  #   name: 'gcr.io/cloud-builders/docker'
-  #   args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/cloud-run-learning:$BUILD_ID']
+  - id: 'push-cloud-run'
+    name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/cloud-run-learning:$BUILD_ID']
 
   # Step 4: Deploy Cloud Run service (commented out for free tier)
-  # - id: 'deploy-cloud-run'
-  #   name: 'gcr.io/cloud-builders/gcloud'
-  #   args: [
-  #     'run',
-  #     'deploy',
-  #     'cloud-run-learning',
-  #     '--image', 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/cloud-run-learning:$BUILD_ID',
-  #     '--region', 'us-central1',
-  #     '--platform', 'managed',
-  #     '--allow-unauthenticated'
-  #   ]
+  - id: 'deploy-cloud-run'
+    name: 'gcr.io/cloud-builders/gcloud'
+    args: [
+      'run',
+      'deploy',
+      'cloud-run-learning',
+      '--image', 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/cloud-run-learning:$BUILD_ID',
+      '--region', 'us-central1',
+      '--platform', 'managed',
+      '--allow-unauthenticated'
+    ]
 
   # Step 5: Build Next.js client
   - id: 'build-nextjs'
