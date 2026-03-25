@@ -23,7 +23,7 @@ apiRouter.get("/health", (_, res: Response) => {
 apiRouter.get("/info", (_, res: Response) => {
   res.json({
     service: "Cloud Run Learning App",
-    version: "2.0.0",
+    version: "2.0.1",
     language: "TypeScript",
     environment: process.env.ENVIRONMENT || "development",
     port: port,
