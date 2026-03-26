@@ -55,28 +55,13 @@ steps:
     args:
       - "-c"
       - |
-        # Deploy hosting + functions with JSON output
         DEPLOY_JSON=$(firebase hosting:channel:deploy "$TAG_NAME" --expires 1d --project "$PROJECT_ID" --json)
-        echo "$DEPLOY_JSON"   # logs still streamed to console
-        # Extract the preview URL
+        echo "$DEPLOY_JSON"
         PREVIEW_URL=$(echo "$DEPLOY_JSON" | jq -r ".result.\"$PROJECT_ID\".url")
         echo "Preview URL detected: $PREVIEW_URL"
-        # Export it for the next step
-        echo "PREVIEW_URL=$PREVIEW_URL"
-
-  # Step 7: Save the preview version to FireStore
-  - id: "save-preview-url-firestore"
-    name: "gcr.io/cloud-builders/gcloud"
-    entrypoint: "bash"
-    # Pass PREVIEW_URL from previous step via env
-    env:
-      - "PREVIEW_URL=$PREVIEW_URL"
-    args:
-      - "-c"
-      - |
-        echo "Saving preview URL $PREVIEW_URL to Firestore..."
-        echo "PREVIEW_URL=$PREVIEW_URL"
-        echo "TAG_NAME=$TAG_NAME"
+        gcloud firestore documents create "preview-versions/$TAG_NAME" \
+          --data="{\"url\": \"$PREVIEW_URL\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}" \
+          --project "$PROJECT_ID"
 
 # Logging configuration (required when using custom service account)
 options:
