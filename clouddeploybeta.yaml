@@ -60,21 +60,7 @@ steps:
     entrypoint: "bash"
     args:
       - "-c"
-      - |
-        # 1. Install firebase-tools (if not in image)
-        npm install -g firebase-tools
-
-        # 2. Deploy and capture JSON
-        firebase hosting:channel:deploy "${TAG_NAME}" --expires 1d --project "${PROJECT_ID}" --json
-
-        # # 3. Use Node to extract the URL and save to workspace
-        # node -e "
-        #   const fs = require('fs');
-        #   const data = JSON.parse(fs.readFileSync('./result.json', 'utf8'));
-        #   const url = Object.values(data.result)[0].url;
-        #   fs.writeFileSync('/workspace/preview_url.txt', url);
-        #   console.log('Extracted URL:', url);
-        # "
+      - "firebase hosting:channel:deploy ${TAG_NAME} --expires 1d --project ${PROJECT_ID} --json"
 
   # Step 8: Save the URL to Firestore
   # - id: "save-preview-url-firestore"
