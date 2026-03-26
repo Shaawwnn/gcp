@@ -64,7 +64,7 @@ steps:
         echo "Deploying to Hosting Preview Channel... TAG_NAME: ${TAG_NAME}"
 
         # 'tee' saves the JSON to result.json AND passes it to jq
-        firebase hosting:channel:deploy "${_TAG_NAME}" --expires 1d --json | tee result.json | \
+        firebase hosting:channel:deploy "${TAG_NAME}" --expires 1d --json | tee result.json | \
         jq -r ".result[\"$PROJECT_ID\"].url" > /workspace/url.txt
 
         echo "$(cat result.json)"
