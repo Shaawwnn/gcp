@@ -65,30 +65,30 @@ steps:
         npm install -g firebase-tools
 
         # 2. Deploy and capture JSON
-        firebase hosting:channel:deploy "${TAG_NAME}" --expires 1d --project "${PROJECT_ID}" --json > result.json
+        firebase hosting:channel:deploy "${TAG_NAME}" --expires 1d --project "${PROJECT_ID}" --json
 
-        # 3. Use Node to extract the URL and save to workspace
-        node -e "
-          const fs = require('fs');
-          const data = JSON.parse(fs.readFileSync('./result.json', 'utf8'));
-          const url = Object.values(data.result)[0].url;
-          fs.writeFileSync('/workspace/preview_url.txt', url);
-          console.log('Extracted URL:', url);
-        "
+        # # 3. Use Node to extract the URL and save to workspace
+        # node -e "
+        #   const fs = require('fs');
+        #   const data = JSON.parse(fs.readFileSync('./result.json', 'utf8'));
+        #   const url = Object.values(data.result)[0].url;
+        #   fs.writeFileSync('/workspace/preview_url.txt', url);
+        #   console.log('Extracted URL:', url);
+        # "
 
   # Step 8: Save the URL to Firestore
-  - id: "save-preview-url-firestore"
-    name: "gcr.io/google.com/cloudsdktool/google-cloud-cli:latest"
-    entrypoint: "bash"
-    args:
-      - "-c"
-      - |
-        URL=$(cat /workspace/preview_url.txt)
-        gcloud firestore documents create \
-          --collection=preview_deployments \
-          --document-id="${TAG_NAME}" \
-          --fields=url=string:"$$URL",status=string:"deployed",timestamp=timestamp:"$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-
+  # - id: "save-preview-url-firestore"
+  #   name: "gcr.io/google.com/cloudsdktool/google-cloud-cli:latest"
+  #   entrypoint: "bash"
+  #   args:
+  #     - "-c"
+  #     - |
+  #       URL=$(cat /workspace/preview_url.txt)
+  #       gcloud firestore documents create \
+  #         --collection=preview_deployments \
+  #         --document-id="${TAG_NAME}" \
+  #         --fields=url=string:"$$URL",status=string:"deployed",timestamp=timestamp:"$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  #   waitFor: ["deploy-to-hosting-preview-channel"]
 # Logging configuration (required when using custom service account)
 options:
   logging: CLOUD_LOGGING_ONLY
