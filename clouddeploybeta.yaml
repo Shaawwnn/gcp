@@ -75,19 +75,39 @@ steps:
         echo "Successfully extracted URL: $(cat /workspace/url.txt)"
 
   # Step 8: Save the URL to Firestore
-  - id: "save-preview-url-firestore"
+  - id: "save-to-firestore-rest"
     name: "gcr.io/google.com/cloudsdktool/google-cloud-cli:latest"
     entrypoint: "bash"
     args:
       - "-c"
       - |
-        RAW_URL=$$(cat /workspace/url.txt)
-        RAW_EXPIRY=$$(cat /workspace/expiry.txt)
+        TOKEN=$$(gcloud auth print-access-token)
+        URL=$$(cat /workspace/url.txt)
+        EXPIRY=$$(cat /workspace/expiry.txt)
 
-        gcloud beta firestore documents patch \
-          --collection=previews \
-          --document-id="${_TAG_NAME}" \
-          --fields=url=string:"$$RAW_URL",version=string:"${_TAG_NAME}",expires_at=timestamp:"$$RAW_EXPIRY",created_at=timestamp:"$$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+        # POST to ensure it ONLY creates and fails if it already exists
+        STATUS=$$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+          "https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/previews?documentId=${_TAG_NAME}" \
+          -H "Authorization: Bearer $$TOKEN" \
+          -H "Content-Type: application/json" \
+          -d "{
+            \"fields\": {
+              \"url\": { \"stringValue\": \"$$URL\" },
+              \"version\": { \"stringValue\": \"${_TAG_NAME}\" },
+              \"expires_at\": { \"timestampValue\": \"$$EXPIRY\" },
+              \"created_at\": { \"timestampValue\": \"$$(date -u +%Y-%m-%dT%H:%M:%SZ)\" }
+            }
+          }")
+
+        if [ "$$STATUS" -eq 200 ] || [ "$$STATUS" -eq 201 ]; then
+          echo "✅ Document created in Firestore."
+        elif [ "$$STATUS" -eq 409 ]; then
+          echo "❌ ERROR: Document ${_TAG_NAME} already exists. No updates allowed."
+          exit 1
+        else
+          echo "❌ ERROR: Firestore API returned $$STATUS"
+          exit 1
+        fi
 
 # Logging configuration (required when using custom service account)
 options:
