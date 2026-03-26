@@ -61,7 +61,7 @@ steps:
     args:
       - "-c"
       - |
-        echo "Deploying to Hosting Preview Channel... TAG_NAME: ${_TAG_NAME}"
+        echo "Deploying to Hosting Preview Channel... TAG_NAME: ${TAG_NAME}"
 
         # 'tee' saves the JSON to result.json AND passes it to jq
         firebase hosting:channel:deploy "${_TAG_NAME}" --expires 1d --json | tee result.json | \
@@ -78,12 +78,12 @@ steps:
     args:
       - "-c"
       - |
-        TOKEN=$$(gcloud auth print-access-token)
+        TOKEN=$$(gcloud auth application-default print-access-token)
         URL=$$(cat /workspace/url.txt)
         EXPIRY=$$(cat /workspace/expiry.txt)
 
         echo "Saving to Firestore... URL: $$URL, EXPIRY: $$EXPIRY"
-        # POST to ensure it ONLY creates and fails if it already exists
+        echo "TOKEN: $$TOKEN"
         STATUS=$$(curl -s -o /dev/null -w "%{http_code}" -X POST \
           "https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/previews?documentId=${_TAG_NAME}" \
           -H "Authorization: Bearer $$TOKEN" \
@@ -91,7 +91,7 @@ steps:
           -d "{
             \"fields\": {
               \"url\": { \"stringValue\": \"$$URL\" },
-              \"version\": { \"stringValue\": \"${_TAG_NAME}\" },
+              \"version\": { \"stringValue\": \"${TAG_NAME}\" },
               \"expires_at\": { \"timestampValue\": \"$$EXPIRY\" },
               \"created_at\": { \"timestampValue\": \"$$(date -u +%Y-%m-%dT%H:%M:%SZ)\" }
             }
