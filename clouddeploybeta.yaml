@@ -56,25 +56,36 @@ steps:
 
   # Step 7: Deploy to Hosting Preview Channel
   - id: "deploy-to-hosting-preview-channel"
-    name: "us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/firebase:v1"
+    name: "gcr.io/google.com/cloudsdktool/google-cloud-cli:latest"
     entrypoint: "bash"
     args:
       - "-c"
-      - "firebase hosting:channel:deploy ${TAG_NAME} --expires 1d --project ${PROJECT_ID} --json"
+      - |
+        # 1. Deploy
+        firebase hosting:channel:deploy "${_TAG_NAME}" --expires 1d --json > result.json
+
+        # 2. Extract with Node (finding the JSON start manually)
+        URL=$(node -e "
+          const fs = require('fs');
+          const raw = fs.readFileSync('./result.json', 'utf8');
+          const data = JSON.parse(raw.substring(raw.indexOf('{')));
+          console.log(Object.values(data.result)[0].url);
+        ")
+        echo $$URL > /workspace/url.txt
 
   # Step 8: Save the URL to Firestore
-  # - id: "save-preview-url-firestore"
-  #   name: "gcr.io/google.com/cloudsdktool/google-cloud-cli:latest"
-  #   entrypoint: "bash"
-  #   args:
-  #     - "-c"
-  #     - |
-  #       URL=$(cat /workspace/preview_url.txt)
-  #       gcloud firestore documents create \
-  #         --collection=preview_deployments \
-  #         --document-id="${TAG_NAME}" \
-  #         --fields=url=string:"$$URL",status=string:"deployed",timestamp=timestamp:"$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-  #   waitFor: ["deploy-to-hosting-preview-channel"]
+  - id: "save-preview-url-firestore"
+    name: "gcr.io/google.com/cloudsdktool/google-cloud-cli:latest"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        URL=$(cat /workspace/url.txt)
+        gcloud firestore documents create \
+          --collection=preview_deployments \
+          --document-id="${TAG_NAME}" \
+          --fields=url=string:"$$URL",status=string:"deployed",timestamp=timestamp:"$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    waitFor: ["deploy-to-hosting-preview-channel"]
 # Logging configuration (required when using custom service account)
 options:
   logging: CLOUD_LOGGING_ONLY
