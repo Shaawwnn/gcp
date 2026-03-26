@@ -74,7 +74,7 @@ steps:
   - id: "save-preview-url-firestore"
     name: "gcr.io/google.com/cloudsdktool/google-cloud-cli:latest"
     entrypoint: "bash"
-   args:
+    args:
       - "-c"
       - |
         TOKEN=$$(gcloud auth print-access-token)
