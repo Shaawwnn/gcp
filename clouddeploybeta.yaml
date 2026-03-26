@@ -48,6 +48,12 @@ steps:
     name: "us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/nextjs:v1"
     args: ["cd client && yarn build"]
 
+  # Step 6: Build Cloud Run Functions
+  - id: "build-cloud-run-functions"
+    name: "node:22-alpine"
+    entrypoint: "yarn"
+    args: ["--cwd", "cloud-run-functions", "build"]
+
   # Step 6: Deploy Functions + Hosting together (optimized single deployment) and save preview URL
   - id: "deploy-firebase-preview"
     name: "us-central1-docker.pkg.dev/${PROJECT_ID}/cloud-run-apps/firebase:v1"
