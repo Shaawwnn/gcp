@@ -72,18 +72,37 @@ steps:
 
   # Step 8: Save the URL to Firestore
   - id: "save-preview-url-firestore"
-    name: "gcr.io/google.com/cloudsdktool/google-cloud-cli:latest"
-    entrypoint: "bash"
+   name: 'gcr.io/google.com/cloudsdktool/google-cloud-cli:latest'
+    entrypoint: 'bash'
     args:
-      - "-c"
+      - '-c'
       - |
-        RAW_URL=$$(cat /workspace/url.txt)
-        RAW_EXPIRY=$$(cat /workspace/expiry.txt)
+        TOKEN=$$(gcloud auth print-access-token)
+        
+        # -w "%{http_code}" captures the status code (e.g., 200, 409)
+        # -o /dev/null hides the long JSON response from the logs
+        STATUS=$$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+          "https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/previews?documentId=${_TAG_NAME}" \
+          -H "Authorization: Bearer $$TOKEN" \
+          -H "Content-Type: application/json" \
+          -d "{
+            \"fields\": {
+              \"url\": { \"stringValue\": \"$$(cat /workspace/url.txt)\" },
+              \"version\": { \"stringValue\": \"${_TAG_NAME}\" },
+              \"expires_at\": { \"timestampValue\": \"$$(cat /workspace/expiry.txt)\" },
+              \"created_at\": { \"timestampValue\": \"$$(date -u +%Y-%m-%dT%H:%M:%SZ)\" }
+            }
+          }")
 
-        gcloud beta firestore documents patch \
-          --collection=previews \
-          --document-id="${_TAG_NAME}" \
-          --fields=url=string:"$$RAW_URL",version=string:"${_TAG_NAME}",expires_at=timestamp:"$$RAW_EXPIRY",created_at=timestamp:"$$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+        if [ "$$STATUS" -eq 200 ]; then
+          echo "✅ Document created successfully."
+        elif [ "$$STATUS" -eq 409 ]; then
+          echo "❌ ERROR: Document with ID ${_TAG_NAME} already exists! Build failed to prevent overwrite."
+          exit 1
+        else
+          echo "❌ ERROR: Firestore returned status $$STATUS"
+          exit 1
+        fi
 
 # Logging configuration (required when using custom service account)
 options:
