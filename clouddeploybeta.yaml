@@ -67,6 +67,7 @@ steps:
         firebase hosting:channel:deploy "${_TAG_NAME}" --expires 1d --json | tee result.json | \
         jq -r ".result[\"$PROJECT_ID\"].url" > /workspace/url.txt
 
+        echo "$(cat result.json)"
         # Now result.json actually exists, so we can extract the expiry
         cat result.json | jq -r ".result[\"$PROJECT_ID\"].expireTime" > /workspace/expiry.txt
 
@@ -81,6 +82,7 @@ steps:
         URL=$$(cat /workspace/url.txt)
         EXPIRY=$$(cat /workspace/expiry.txt)
 
+        echo "Saving to Firestore... URL: $$URL, EXPIRY: $$EXPIRY"
         # POST to ensure it ONLY creates and fails if it already exists
         STATUS=$$(curl -s -o /dev/null -w "%{http_code}" -X POST \
           "https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/previews?documentId=${_TAG_NAME}" \
