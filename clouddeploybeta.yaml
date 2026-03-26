@@ -48,20 +48,29 @@ steps:
     name: "us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/nextjs:v1"
     args: ["cd client && yarn build"]
 
-  # Step 6: Deploy Functions + Hosting together (optimized single deployment)
+  # Step 6: Deploy Functions + Hosting together (optimized single deployment) and save preview URL
   - id: "deploy-firebase-preview"
-    name: "us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/firebase:v1"
+    name: "us-central1-docker.pkg.dev/${PROJECT_ID}/cloud-run-apps/firebase:v1"
     entrypoint: "bash"
     args:
       - "-c"
       - |
-        DEPLOY_JSON=$(firebase hosting:channel:deploy "$TAG_NAME" --expires 1d --project "$PROJECT_ID" --json)
+        # Deploy preview channel and capture JSON output
+        DEPLOY_JSON=$(firebase hosting:channel:deploy "${TAG_NAME}" --expires 1d --project "${PROJECT_ID}" --json)
+
+        # Show full JSON in logs
         echo "$DEPLOY_JSON"
-        PREVIEW_URL=$(echo "$DEPLOY_JSON" | jq -r ".result.\"$PROJECT_ID\".url")
-        echo "Preview URL detected: $PREVIEW_URL"
-        gcloud firestore documents create "preview-versions/$TAG_NAME" \
-          --data="{\"url\": \"$PREVIEW_URL\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}" \
-          --project "$PROJECT_ID"
+
+        # Extract preview URL using jq safely
+        PREVIEW_URL=$(echo "$DEPLOY_JSON" | jq -r --arg proj "${PROJECT_ID}" '.result[$proj].url')
+
+        # Print detected URL
+        echo "Preview URL detected: ${PREVIEW_URL}"
+
+        # Save preview URL to Firestore
+        gcloud firestore documents create "preview-versions/${TAG_NAME}" \
+          --data="{\"url\": \"${PREVIEW_URL}\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}" \
+          --project "${PROJECT_ID}"
 
 # Logging configuration (required when using custom service account)
 options:
