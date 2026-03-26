@@ -63,22 +63,18 @@ steps:
       - |
         set -o pipefail
 
-        # 'tee' now writes to the file, the logs (/dev/stderr), AND jq
-        firebase hosting:channel:deploy "${_TAG_NAME}" --expires 1d --json | \
-        tee result.json /dev/stderr | \
+        # 'tee' saves the JSON to result.json AND passes it to jq
+        firebase hosting:channel:deploy "${_TAG_NAME}" --expires 1d --json | tee result.json | \
         jq -r ".result[\"$PROJECT_ID\"].url" > /workspace/url.txt
 
-        # result.json is now available for the second extraction
+        # Now result.json actually exists, so we can extract the expiry
         cat result.json | jq -r ".result[\"$PROJECT_ID\"].expireTime" > /workspace/expiry.txt
 
-        # Simple confirmation in logs
-        echo "Successfully extracted URL: $(cat /workspace/url.txt)"
-
   # Step 8: Save the URL to Firestore
-  - id: "save-to-firestore-rest"
+  - id: "save-preview-url-firestore"
     name: "gcr.io/google.com/cloudsdktool/google-cloud-cli:latest"
     entrypoint: "bash"
-    args:
+   args:
       - "-c"
       - |
         TOKEN=$$(gcloud auth print-access-token)
