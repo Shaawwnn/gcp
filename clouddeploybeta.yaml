@@ -70,12 +70,12 @@ steps:
   - id: "save-preview-url-firestore"
     name: "gcr.io/google.com/cloudsdktool/google-cloud-cli:latest"
     entrypoint: "bash"
-   args:
+    args:
       - "-c"
       - |
         RAW_URL=$$(cat /workspace/url.txt)
         RAW_EXPIRY=$$(cat /workspace/expiry.txt)
-        
+
         # We add 'expires_at' as a timestamp field
         gcloud firestore documents create \
           --collection=previews \
