@@ -1,9 +1,9 @@
 steps:
-  # # Step 1: Install workspace dependencies
-  # - id: "install-dependencies"
-  #   name: "node:22-alpine"
-  #   entrypoint: "yarn"
-  #   args: ["install", "--frozen-lockfile"]
+  # Step 1: Install workspace dependencies
+  - id: "install-dependencies"
+    name: "node:22-alpine"
+    entrypoint: "yarn"
+    args: ["install", "--frozen-lockfile"]
 
   # # Step 2: Build Cloud Run Docker image (commented out for free tier)
   # - id: "build-cloud-run"
@@ -43,10 +43,10 @@ steps:
   #       "--allow-unauthenticated",
   #     ]
 
-  # # Step 5: Build Next.js client
-  # - id: "build-nextjs"
-  #   name: "us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/nextjs:v1"
-  #   args: ["cd client && yarn build"]
+  # Step 5: Build Next.js client
+  - id: "build-nextjs"
+    name: "us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/nextjs:v1"
+    args: ["cd client && yarn build"]
 
   # Step 6: Deploy Functions + Hosting together (optimized single deployment)
   - id: "deploy-firebase-preview"
