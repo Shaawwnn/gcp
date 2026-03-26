@@ -56,7 +56,7 @@ steps:
 
   # Step 7: Deploy to Hosting Preview Channel
   - id: "deploy-to-hosting-preview-channel"
-    name: "gcr.io/google.com/cloudsdktool/google-cloud-cli:latest"
+    name: "us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/firebase:v1"
     entrypoint: "bash"
     args:
       - "-c"
