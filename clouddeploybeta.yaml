@@ -61,7 +61,7 @@ steps:
     args:
       - "-c"
       - |
-        set -o pipefail
+        echo "Deploying to Hosting Preview Channel... TAG_NAME: ${_TAG_NAME}"
 
         # 'tee' saves the JSON to result.json AND passes it to jq
         firebase hosting:channel:deploy "${_TAG_NAME}" --expires 1d --json | tee result.json | \
