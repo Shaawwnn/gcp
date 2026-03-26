@@ -54,25 +54,40 @@ steps:
     entrypoint: "yarn"
     args: ["--cwd", "cloud-run-functions", "build"]
 
-  # Step 6: Deploy Functions + Hosting together (optimized single deployment) and save preview URL
-  - id: "deploy-firebase-preview"
-    name: "us-central1-docker.pkg.dev/${PROJECT_ID}/cloud-run-apps/firebase:v1"
+  # Step 7: Deploy to Hosting Preview Channel
+  - id: "deploy-to-hosting-preview-channel"
+    name: "gcr.io/google.com/cloudsdktool/google-cloud-cli:latest"
     entrypoint: "bash"
     args:
       - "-c"
       - |
-        # Bash variables inside this block are fine; Cloud Build won't parse them
-        deploy_json=$(firebase hosting:channel:deploy "${TAG_NAME}" --expires 1d --project "${PROJECT_ID}" --json)
+        # 1. Install firebase-tools (if not in image)
+        npm install -g firebase-tools
 
-        echo "$deploy_json"
+        # 2. Deploy and capture JSON
+        firebase hosting:channel:deploy "${TAG_NAME}" --expires 1d --project "${PROJECT_ID}" --json > result.json
 
-        preview_url=$(echo "$deploy_json" | jq -r --arg proj "${PROJECT_ID}" '.result[$proj].url')
+        # 3. Use Node to extract the URL and save to workspace
+        node -e "
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('./result.json', 'utf8'));
+          const url = Object.values(data.result)[0].url;
+          fs.writeFileSync('/workspace/preview_url.txt', url);
+          console.log('Extracted URL:', url);
+        "
 
-        echo "Preview URL detected: ${preview_url}"
-
-        gcloud firestore documents create "preview-versions/${TAG_NAME}" \
-          --data="{\"url\": \"${preview_url}\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}" \
-          --project "${PROJECT_ID}"
+  # Step 8: Save the URL to Firestore
+  - id: "save-preview-url-firestore"
+    name: "gcr.io/google.com/cloudsdktool/google-cloud-cli:latest"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        URL=$(cat /workspace/preview_url.txt)
+        gcloud firestore documents create \
+          --collection=preview_deployments \
+          --document-id="${TAG_NAME}" \
+          --fields=url=string:"$URL",status=string:"deployed",timestamp=timestamp:"$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
 # Logging configuration (required when using custom service account)
 options:
