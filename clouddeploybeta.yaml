@@ -61,9 +61,13 @@ steps:
     args:
       - "-c"
       - |
-        firebase hosting:channel:deploy "${_TAG_NAME}" --expires 1d --json | \
-        # Extract URL and Expiry using direct Project ID key
-        cat result.json | jq -r ".result[\"$PROJECT_ID\"].url" > /workspace/url.txt
+        set -o pipefail
+
+        # 'tee' saves the JSON to result.json AND passes it to jq
+        firebase hosting:channel:deploy "${_TAG_NAME}" --expires 1d --json | tee result.json | \
+        jq -r ".result[\"$PROJECT_ID\"].url" > /workspace/url.txt
+
+        # Now result.json actually exists, so we can extract the expiry
         cat result.json | jq -r ".result[\"$PROJECT_ID\"].expireTime" > /workspace/expiry.txt
 
   # Step 8: Save the URL to Firestore
@@ -76,12 +80,11 @@ steps:
         RAW_URL=$$(cat /workspace/url.txt)
         RAW_EXPIRY=$$(cat /workspace/expiry.txt)
 
-        # We add 'expires_at' as a timestamp field
-        gcloud firestore documents create \
+        gcloud beta firestore documents patch \
           --collection=previews \
           --document-id="${_TAG_NAME}" \
           --fields=url=string:"$$RAW_URL",version=string:"${_TAG_NAME}",expires_at=timestamp:"$$RAW_EXPIRY",created_at=timestamp:"$$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-    waitFor: ["deploy-to-hosting-preview-channel"]
+
 # Logging configuration (required when using custom service account)
 options:
   logging: CLOUD_LOGGING_ONLY
