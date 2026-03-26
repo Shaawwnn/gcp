@@ -55,21 +55,17 @@ steps:
     args:
       - "-c"
       - |
-        # Deploy preview channel and capture JSON output
-        DEPLOY_JSON=$(firebase hosting:channel:deploy "${TAG_NAME}" --expires 1d --project "${PROJECT_ID}" --json)
+        # Bash variables inside this block are fine; Cloud Build won't parse them
+        deploy_json=$(firebase hosting:channel:deploy "${TAG_NAME}" --expires 1d --project "${PROJECT_ID}" --json)
 
-        # Show full JSON in logs
-        echo "$DEPLOY_JSON"
+        echo "$deploy_json"
 
-        # Extract preview URL using jq safely
-        PREVIEW_URL=$(echo "$DEPLOY_JSON" | jq -r --arg proj "${PROJECT_ID}" '.result[$proj].url')
+        preview_url=$(echo "$deploy_json" | jq -r --arg proj "${PROJECT_ID}" '.result[$proj].url')
 
-        # Print detected URL
-        echo "Preview URL detected: ${PREVIEW_URL}"
+        echo "Preview URL detected: ${preview_url}"
 
-        # Save preview URL to Firestore
         gcloud firestore documents create "preview-versions/${TAG_NAME}" \
-          --data="{\"url\": \"${PREVIEW_URL}\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}" \
+          --data="{\"url\": \"${preview_url}\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}" \
           --project "${PROJECT_ID}"
 
 # Logging configuration (required when using custom service account)
