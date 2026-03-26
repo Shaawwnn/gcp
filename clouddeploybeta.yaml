@@ -87,7 +87,7 @@ steps:
         gcloud firestore documents create \
           --collection=preview_deployments \
           --document-id="${TAG_NAME}" \
-          --fields=url=string:"$URL",status=string:"deployed",timestamp=timestamp:"$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          --fields=url=string:"$$URL",status=string:"deployed",timestamp=timestamp:"$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
 # Logging configuration (required when using custom service account)
 options:
