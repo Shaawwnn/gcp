@@ -54,58 +54,22 @@ steps:
     entrypoint: "yarn"
     args: ["--cwd", "cloud-run-functions", "build"]
 
-  # Step 7: Deploy to Hosting Preview Channel
-  - id: "deploy-to-hosting-preview-channel"
+  # Step 7: Install scripts/node_modules (firebase-admin for Firestore write)
+  - id: "install-scripts-deps"
+    name: "node:22-alpine"
+    entrypoint: "npm"
+    args: ["install", "--prefix", "scripts"]
+
+  # Step 8: Deploy to Hosting Preview Channel and Save to Firestore
+  - id: "deploy-and-save-preview"
     name: "us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/firebase:v1"
     entrypoint: "bash"
     args:
-      - "-c"
-      - |
-        echo "Deploying to Hosting Preview Channel... TAG_NAME: ${TAG_NAME}"
-
-        # 'tee' saves the JSON to result.json AND passes it to jq
-        firebase hosting:channel:deploy "${TAG_NAME}" --expires 1d --json | tee result.json | \
-        jq -r ".result[\"$PROJECT_ID\"].url" > /workspace/url.txt
-
-        echo "$(cat result.json)"
-        # Now result.json actually exists, so we can extract the expiry
-        cat result.json | jq -r ".result[\"$PROJECT_ID\"].expireTime" > /workspace/expiry.txt
-
-  # Step 8: Save the URL to Firestore
-  - id: "save-preview-url-firestore"
-    name: "gcr.io/google.com/cloudsdktool/google-cloud-cli:latest"
-    entrypoint: "bash"
-    args:
-      - "-c"
-      - |
-        TOKEN=$$(gcloud auth application-default print-access-token)
-        URL=$$(cat /workspace/url.txt)
-        EXPIRY=$$(cat /workspace/expiry.txt)
-
-        echo "Saving to Firestore... URL: $$URL, EXPIRY: $$EXPIRY"
-        echo "TOKEN: $$TOKEN"
-        STATUS=$$(curl -s -o /dev/null -w "%{http_code}" -X POST \
-          "https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/previews?documentId=${_TAG_NAME}" \
-          -H "Authorization: Bearer $$TOKEN" \
-          -H "Content-Type: application/json" \
-          -d "{
-            \"fields\": {
-              \"url\": { \"stringValue\": \"$$URL\" },
-              \"version\": { \"stringValue\": \"${TAG_NAME}\" },
-              \"expires_at\": { \"timestampValue\": \"$$EXPIRY\" },
-              \"created_at\": { \"timestampValue\": \"$$(date -u +%Y-%m-%dT%H:%M:%SZ)\" }
-            }
-          }")
-
-        if [ "$$STATUS" -eq 200 ] || [ "$$STATUS" -eq 201 ]; then
-          echo "✅ Document created in Firestore."
-        elif [ "$$STATUS" -eq 409 ]; then
-          echo "❌ ERROR: Document ${_TAG_NAME} already exists. No updates allowed."
-          exit 1
-        else
-          echo "❌ ERROR: Firestore API returned $$STATUS"
-          exit 1
-        fi
+      - "/workspace/scripts/deploy-preview-channel.sh"
+    env:
+      - "TAG_NAME=${TAG_NAME}"
+      - "_TAG_NAME=${_TAG_NAME}"
+      - "PROJECT_ID=${PROJECT_ID}"
 
 # Logging configuration (required when using custom service account)
 options:
