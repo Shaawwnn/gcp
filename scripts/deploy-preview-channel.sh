@@ -10,8 +10,11 @@
 set -euo pipefail
 
 : "${TAG_NAME:?Missing TAG_NAME}"
-: "${DOC_ID:?Missing DOC_ID}"
 : "${PROJECT_ID:?Missing PROJECT_ID}"
+
+# _TAG_NAME is a user-defined substitution in the Cloud Build trigger.
+# Fall back to TAG_NAME if it was not supplied (e.g. manual builds).
+DOC_ID="${DOC_ID:-$TAG_NAME}"
 
 echo "Deploying to Hosting Preview Channel... TAG_NAME: $TAG_NAME"
 
