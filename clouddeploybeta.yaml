@@ -5,7 +5,7 @@ steps:
     entrypoint: 'yarn'
     args: ['install', '--frozen-lockfile']
 
-  # Step 2: Build Cloud Run Docker image (commented out for free tier)
+  # # Step 2: Build Cloud Run Docker image (commented out for free tier)
   - id: 'build-cloud-run'
     name: 'gcr.io/cloud-builders/docker'
     args:
@@ -17,13 +17,13 @@ steps:
       ]
     dir: 'cloud-run'
 
-  # Step 3: Push image to Artifact Registry (commented out for free tier)
+  # # Step 3: Push image to Artifact Registry (commented out for free tier)
   - id: 'push-cloud-run'
     name: 'gcr.io/cloud-builders/docker'
     args:
       ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/cloud-run-learning:$BUILD_ID']
 
-  # Step 4: Deploy Cloud Run service (commented out for free tier)
+  # # Step 4: Deploy Cloud Run service (commented out for free tier)
   - id: 'deploy-cloud-run'
     name: 'gcr.io/cloud-builders/gcloud'
     args:
@@ -51,10 +51,21 @@ steps:
     entrypoint: 'yarn'
     args: ['--cwd', 'cloud-run-functions', 'build']
 
-  # Step 7: Deploy Functions + Hosting together (optimized single deployment)
-  - id: 'deploy-firebase'
+  # Step 7: Install scripts/node_modules (firebase-admin for Firestore write)
+  - id: 'install-scripts-deps'
+    name: 'node:22-alpine'
+    entrypoint: 'npm'
+    args: ['install', '--prefix', 'scripts']
+
+  # Step 8: Deploy to Hosting Preview Channel and Save to Firestore
+  - id: 'deploy-and-save-preview'
     name: 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/firebase:v1'
-    args: ['deploy', '--only', 'functions,hosting', '--non-interactive', '--project', '$PROJECT_ID']
+    entrypoint: 'bash'
+    args:
+      - '/workspace/scripts/deploy-preview-channel.sh'
+    env:
+      - 'TAG_NAME=${TAG_NAME}'
+      - 'PROJECT_ID=${PROJECT_ID}'
 
 # Logging configuration (required when using custom service account)
 options:

@@ -10,9 +10,6 @@
         "firebase-debug.log",
         "firebase-debug.*.log",
         "*.local"
-      ],
-      "predeploy": [
-        "yarn --cwd \"cloud-run-functions\" build"
       ]
     }
   ],
@@ -23,7 +20,15 @@
       {
         "source": "/api/helloWorld",
         "function": {
-          "functionId": "helloWorld",
+          "functionId": "helloWorldV2",
+          "pinTag": true
+        }
+      },
+      {
+        "source": "/api/**",
+        "run": {
+          "serviceId": "cloud-run-learning",
+          "region": "us-central1",
           "pinTag": true
         }
       },
