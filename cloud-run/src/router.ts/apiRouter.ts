@@ -14,7 +14,7 @@ apiRouter.get('/', (_, res: Response) => {
 
 apiRouter.get('/ping', (_, res: Response) => {
   res.json({
-    message: 'Ping v1',
+    message: 'Ping v2',
     timestamp: new Date().toISOString(),
   });
 });
