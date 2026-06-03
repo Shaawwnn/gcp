@@ -68,8 +68,6 @@ steps:
       - "/workspace/scripts/deploy-preview-channel.sh"
     env:
       - "TAG_NAME=${TAG_NAME}"
-      - "VERSION=${TAG_NAME}"
-      - "DOC_ID=${_TAG_NAME}"
       - "PROJECT_ID=${PROJECT_ID}"
 
 # Logging configuration (required when using custom service account)
