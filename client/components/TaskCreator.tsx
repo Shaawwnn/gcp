@@ -35,7 +35,6 @@ export default function TaskCreator() {
         message: response.message,
       });
 
-      // Reset form
       setTaskData({});
       setScheduleDelay(0);
     } catch (error) {
@@ -56,95 +55,84 @@ export default function TaskCreator() {
   };
 
   return (
-    <div className="bg-white dark:bg-zinc-800 rounded-lg p-6 border border-zinc-200 dark:border-zinc-700">
-      <h3 className="text-lg font-semibold mb-4 text-black dark:text-white">
-        Create Cloud Task
-      </h3>
+    <form onSubmit={handleCreateTask} className="space-y-4">
+      <div>
+        <label className="block text-sm font-semibold text-black dark:text-zinc-50 mb-2">
+          Task Type
+        </label>
+        <select
+          value={selectedAction}
+          onChange={(e) => {
+            setSelectedAction(e.target.value);
+            setTaskData({});
+          }}
+          className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800 text-black dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          {TASK_TYPES.map((type) => (
+            <option key={type.action} value={type.action}>
+              {type.label}
+            </option>
+          ))}
+        </select>
+        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+          {selectedTaskType.description}
+        </p>
+      </div>
 
-      <form onSubmit={handleCreateTask} className="space-y-4">
-        {/* Task Type Selection */}
-        <div>
-          <label className="block text-sm font-medium mb-2 text-black dark:text-white">
-            Task Type
-          </label>
-          <select
-            value={selectedAction}
-            onChange={(e) => {
-              setSelectedAction(e.target.value);
-              setTaskData({});
-            }}
-            className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded-lg bg-white dark:bg-zinc-900 text-black dark:text-white"
-          >
-            {TASK_TYPES.map((type) => (
-              <option key={type.action} value={type.action}>
-                {type.label}
-              </option>
-            ))}
-          </select>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-            {selectedTaskType.description}
-          </p>
-        </div>
-
-        {/* Dynamic Data Fields */}
-        {selectedTaskType.dataFields.map((field) => (
-          <div key={field.name}>
-            <label className="block text-sm font-medium mb-2 text-black dark:text-white">
-              {field.label}
-            </label>
-            <input
-              type="text"
-              value={taskData[field.name] || ""}
-              onChange={(e) => handleDataFieldChange(field.name, e.target.value)}
-              placeholder={field.placeholder}
-              className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded-lg bg-white dark:bg-zinc-900 text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500"
-            />
-          </div>
-        ))}
-
-        {/* Schedule Delay */}
-        <div>
-          <label className="block text-sm font-medium mb-2 text-black dark:text-white">
-            Schedule Delay (seconds)
+      {selectedTaskType.dataFields.map((field) => (
+        <div key={field.name}>
+          <label className="block text-sm font-semibold text-black dark:text-zinc-50 mb-2">
+            {field.label}
           </label>
           <input
-            type="number"
-            min="0"
-            max={MAX_SCHEDULE_DELAY_SECONDS}
-            value={scheduleDelay}
-            onChange={(e) => setScheduleDelay(parseInt(e.target.value) || 0)}
-            placeholder="0 = immediate execution"
-            className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded-lg bg-white dark:bg-zinc-900 text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500"
+            type="text"
+            value={taskData[field.name] || ""}
+            onChange={(e) => handleDataFieldChange(field.name, e.target.value)}
+            placeholder={field.placeholder}
+            className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800 text-black dark:text-zinc-50 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-            {scheduleDelay === 0
-              ? "Task will execute immediately"
-              : `Task will execute in ${scheduleDelay} seconds`}
-          </p>
         </div>
+      ))}
 
-        {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={isCreating}
-          className="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white rounded-lg font-medium transition-colors"
+      <div>
+        <label className="block text-sm font-semibold text-black dark:text-zinc-50 mb-2">
+          Schedule Delay (seconds)
+        </label>
+        <input
+          type="number"
+          min="0"
+          max={MAX_SCHEDULE_DELAY_SECONDS}
+          value={scheduleDelay}
+          onChange={(e) => setScheduleDelay(parseInt(e.target.value) || 0)}
+          placeholder="0 = immediate execution"
+          className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800 text-black dark:text-zinc-50 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+          {scheduleDelay === 0
+            ? "Task will execute immediately"
+            : `Task will execute in ${scheduleDelay} seconds`}
+        </p>
+      </div>
+
+      <button
+        type="submit"
+        disabled={isCreating}
+        className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-semibold"
+      >
+        {isCreating ? "Creating Task..." : "Create Task"}
+      </button>
+
+      {result && (
+        <div
+          className={`rounded-lg p-4 border text-sm ${
+            result.success
+              ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200"
+              : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200"
+          }`}
         >
-          {isCreating ? "Creating Task..." : "Create Task"}
-        </button>
-
-        {/* Result Message */}
-        {result && (
-          <div
-            className={`p-3 rounded-lg text-sm ${
-              result.success
-                ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 border border-green-300 dark:border-green-700"
-                : "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border border-red-300 dark:border-red-700"
-            }`}
-          >
-            {result.message}
-          </div>
-        )}
-      </form>
-    </div>
+          {result.message}
+        </div>
+      )}
+    </form>
   );
 }

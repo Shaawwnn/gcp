@@ -3,198 +3,150 @@
 import TaskCreator from "@/components/TaskCreator";
 import TaskViewer from "@/components/TaskViewer";
 
+interface SectionCardProps {
+  title: string;
+  children: React.ReactNode;
+  description?: string;
+}
+
 export default function CloudTasksPage() {
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-lg p-8">
-        <h1 className="text-3xl font-bold mb-2">Cloud Tasks Demo</h1>
-        <p className="text-purple-100">
-          Asynchronous task processing with guaranteed execution and retries
+    <div className="min-h-screen bg-zinc-50 dark:bg-black p-8">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-4xl font-bold text-black dark:text-zinc-50 mb-4">
+          Cloud Tasks Demo
+        </h1>
+        <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-8">
+          Learn about Cloud Tasks for reliable, asynchronous task execution with
+          guaranteed delivery, automatic retries, and rate limiting.
         </p>
-      </div>
 
-      {/* Description */}
-      <div className="bg-white dark:bg-zinc-800 rounded-lg p-6 border border-zinc-200 dark:border-zinc-700">
-        <h2 className="text-xl font-semibold mb-3 text-black dark:text-white">
-          What is Cloud Tasks?
-        </h2>
-        <p className="text-zinc-700 dark:text-zinc-300 mb-4">
-          Cloud Tasks is a fully managed service that lets you execute, dispatch,
-          and deliver a large number of distributed tasks with automatic retries
-          and rate limiting. Unlike Pub/Sub which focuses on real-time messaging,
-          Cloud Tasks is designed for reliable, queued execution.
-        </p>
-        <div className="grid md:grid-cols-2 gap-4 text-sm">
-          <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-            <h3 className="font-semibold mb-2 text-purple-900 dark:text-purple-200">
-              ✅ Use Cloud Tasks When:
-            </h3>
-            <ul className="space-y-1 text-zinc-700 dark:text-zinc-300">
-              <li>• You need guaranteed task execution</li>
-              <li>• You want automatic retries on failure</li>
-              <li>• You need to schedule tasks for future execution</li>
-              <li>• You want to control execution rate</li>
-              <li>• You need task deduplication</li>
-            </ul>
-          </div>
-          <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-            <h3 className="font-semibold mb-2 text-blue-900 dark:text-blue-200">
-              📨 Use Pub/Sub When:
-            </h3>
-            <ul className="space-y-1 text-zinc-700 dark:text-zinc-300">
-              <li>• You need fan-out to multiple subscribers</li>
-              <li>• Real-time event streaming is important</li>
-              <li>• You want loose coupling between services</li>
-              <li>• Message ordering matters</li>
-              <li>• You need replay capability</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* How It Works */}
-      <div className="bg-white dark:bg-zinc-800 rounded-lg p-6 border border-zinc-200 dark:border-zinc-700">
-        <h2 className="text-xl font-semibold mb-3 text-black dark:text-white">
-          How It Works
-        </h2>
-        <div className="space-y-4 text-sm text-zinc-700 dark:text-zinc-300">
-          <div className="flex items-start gap-3">
-            <span className="text-2xl">1️⃣</span>
+        <SectionCard
+          title="About Cloud Tasks"
+          description="Google Cloud Tasks is a fully managed service that lets you execute, dispatch, and deliver distributed tasks with automatic retries and rate limiting. Unlike Pub/Sub which focuses on real-time messaging, Cloud Tasks is designed for reliable, queued execution."
+        >
+          <div className="space-y-3 text-zinc-700 dark:text-zinc-300">
             <div>
-              <strong>Create a Task:</strong> You call the{" "}
-              <code className="px-1 py-0.5 bg-zinc-100 dark:bg-zinc-900 rounded">
-                createTask
-              </code>{" "}
-              Cloud Function, which creates a task document in Firestore and enqueues
-              it in Cloud Tasks.
+              <h3 className="font-semibold mb-2">Key Features:</h3>
+              <ul className="list-disc list-inside space-y-1 ml-4">
+                <li>Guaranteed task execution with at-least-once delivery</li>
+                <li>Automatic retries with exponential backoff</li>
+                <li>Scheduled execution for future tasks</li>
+                <li>Rate limiting to control execution throughput</li>
+                <li>Task deduplication support</li>
+              </ul>
             </div>
           </div>
-          <div className="flex items-start gap-3">
-            <span className="text-2xl">2️⃣</span>
-            <div>
-              <strong>Task is Queued:</strong> The task is added to Cloud Tasks
-              queue. If you specified a delay, it will wait. Otherwise, it executes
-              immediately.
+        </SectionCard>
+
+        <SectionCard
+          title="Create Task"
+          description="Create a Cloud Task that will be enqueued for processing. Optionally schedule it for future execution with a delay in seconds."
+        >
+          <div className="border-t border-zinc-200 dark:border-zinc-800 pt-4">
+            <TaskCreator />
+          </div>
+        </SectionCard>
+
+        <SectionCard
+          title="Task History"
+          description="Watch tasks in real-time as they transition through their lifecycle: queued → processing → completed or failed."
+        >
+          <div className="border-t border-zinc-200 dark:border-zinc-800 pt-4">
+            <TaskViewer />
+          </div>
+        </SectionCard>
+
+        <SectionCard title="How It Works">
+          <div className="space-y-4 text-zinc-700 dark:text-zinc-300">
+            <div className="flex items-start gap-3">
+              <span className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold">
+                1
+              </span>
+              <div>
+                <h3 className="font-semibold mb-1">Create a Task</h3>
+                <p className="text-sm">
+                  You call the{" "}
+                  <span className="font-mono bg-zinc-100 dark:bg-zinc-800 px-1 rounded">
+                    createTask
+                  </span>{" "}
+                  Cloud Function, which creates a task document in Firestore and
+                  enqueues it in Cloud Tasks.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <span className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold">
+                2
+              </span>
+              <div>
+                <h3 className="font-semibold mb-1">Task is Queued</h3>
+                <p className="text-sm">
+                  The task is added to the Cloud Tasks queue. If you specified a
+                  delay, it waits; otherwise it executes immediately.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <span className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold">
+                3
+              </span>
+              <div>
+                <h3 className="font-semibold mb-1">Worker Processes Task</h3>
+                <p className="text-sm">
+                  Cloud Tasks calls your{" "}
+                  <span className="font-mono bg-zinc-100 dark:bg-zinc-800 px-1 rounded">
+                    processTask
+                  </span>{" "}
+                  HTTP endpoint with the task details.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <span className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold">
+                4
+              </span>
+              <div>
+                <h3 className="font-semibold mb-1">Status Updates</h3>
+                <p className="text-sm">
+                  The task status is updated in Firestore throughout its
+                  lifecycle (queued → processing → completed/failed).
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <span className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold">
+                5
+              </span>
+              <div>
+                <h3 className="font-semibold mb-1">Real-time UI Update</h3>
+                <p className="text-sm">
+                  The UI has a real-time Firestore listener that detects status
+                  changes and updates the display without refreshing the page.
+                </p>
+              </div>
             </div>
           </div>
-          <div className="flex items-start gap-3">
-            <span className="text-2xl">3️⃣</span>
-            <div>
-              <strong>Worker Processes Task:</strong> Cloud Tasks calls your{" "}
-              <code className="px-1 py-0.5 bg-zinc-100 dark:bg-zinc-900 rounded">
-                processTask
-              </code>{" "}
-              HTTP endpoint with the task details.
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <span className="text-2xl">4️⃣</span>
-            <div>
-              <strong>Status Updates:</strong> The task status is updated in
-              Firestore throughout its lifecycle (queued → processing → completed/failed).
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <span className="text-2xl">5️⃣</span>
-            <div>
-              <strong>Real-time Updates:</strong> The UI listens to Firestore changes
-              and displays task status in real-time.
-            </div>
-          </div>
-        </div>
+        </SectionCard>
       </div>
+    </div>
+  );
+}
 
-      {/* Task Creator */}
-      <TaskCreator />
-
-      {/* Task Viewer */}
-      <TaskViewer />
-
-      {/* Key Features */}
-      <div className="bg-white dark:bg-zinc-800 rounded-lg p-6 border border-zinc-200 dark:border-zinc-700">
-        <h2 className="text-xl font-semibold mb-3 text-black dark:text-white">
-          Key Features
-        </h2>
-        <div className="grid md:grid-cols-2 gap-4 text-sm">
-          <div>
-            <h3 className="font-semibold mb-2 text-black dark:text-white">
-              ⏱️ Scheduled Execution
-            </h3>
-            <p className="text-zinc-700 dark:text-zinc-300">
-              Tasks can be scheduled to run at a specific time in the future,
-              making them perfect for delayed jobs or scheduled operations.
-            </p>
-          </div>
-          <div>
-            <h3 className="font-semibold mb-2 text-black dark:text-white">
-              🔄 Automatic Retries
-            </h3>
-            <p className="text-zinc-700 dark:text-zinc-300">
-              If a task fails, Cloud Tasks automatically retries with exponential
-              backoff, ensuring eventual success.
-            </p>
-          </div>
-          <div>
-            <h3 className="font-semibold mb-2 text-black dark:text-white">
-              🎯 Rate Limiting
-            </h3>
-            <p className="text-zinc-700 dark:text-zinc-300">
-              Control how many tasks execute per second to prevent overwhelming
-              downstream services or hitting rate limits.
-            </p>
-          </div>
-          <div>
-            <h3 className="font-semibold mb-2 text-black dark:text-white">
-              ✅ Guaranteed Delivery
-            </h3>
-            <p className="text-zinc-700 dark:text-zinc-300">
-              Cloud Tasks guarantees at-least-once delivery, ensuring your tasks
-              will be executed (though you should implement idempotency).
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Use Cases */}
-      <div className="bg-white dark:bg-zinc-800 rounded-lg p-6 border border-zinc-200 dark:border-zinc-700">
-        <h2 className="text-xl font-semibold mb-3 text-black dark:text-white">
-          Real-World Use Cases
-        </h2>
-        <div className="space-y-3 text-sm text-zinc-700 dark:text-zinc-300">
-          <div className="p-3 bg-zinc-50 dark:bg-zinc-900 rounded">
-            <strong>📧 Email Campaigns:</strong> Queue thousands of emails to be sent
-            with rate limiting to respect provider limits.
-          </div>
-          <div className="p-3 bg-zinc-50 dark:bg-zinc-900 rounded">
-            <strong>🖼️ Image Processing:</strong> Process uploaded images (resize,
-            compress, generate thumbnails) without blocking the upload request.
-          </div>
-          <div className="p-3 bg-zinc-50 dark:bg-zinc-900 rounded">
-            <strong>📊 Report Generation:</strong> Generate complex reports in the
-            background and notify users when complete.
-          </div>
-          <div className="p-3 bg-zinc-50 dark:bg-zinc-900 rounded">
-            <strong>🔄 Data Sync:</strong> Synchronize data between systems with
-            automatic retries on failure.
-          </div>
-          <div className="p-3 bg-zinc-50 dark:bg-zinc-900 rounded">
-            <strong>🗑️ Cleanup Jobs:</strong> Schedule periodic cleanup of old data,
-            temporary files, or expired sessions.
-          </div>
-        </div>
-      </div>
-
-      {/* Free Tier Info */}
-      <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 text-sm">
-        <h3 className="font-semibold text-green-900 dark:text-green-200 mb-2">
-          💰 Free Tier
-        </h3>
-        <p className="text-green-800 dark:text-green-300">
-          Cloud Tasks offers <strong>1 million task operations per month</strong>{" "}
-          for free, making it perfect for learning and small-scale applications.
-        </p>
-      </div>
+function SectionCard({ title, children, description }: SectionCardProps) {
+  return (
+    <div className="bg-white dark:bg-zinc-900 rounded-lg p-6 shadow-sm mb-6">
+      <h2 className="text-2xl font-semibold text-black dark:text-zinc-50 mb-4">
+        {title}
+      </h2>
+      {description && (
+        <p className="text-zinc-700 dark:text-zinc-300 mb-4">{description}</p>
+      )}
+      {children}
     </div>
   );
 }

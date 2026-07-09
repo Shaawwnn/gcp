@@ -24,7 +24,7 @@ export default function Home() {
     <div className="min-h-screen bg-zinc-50 dark:bg-black p-8">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold text-black dark:text-zinc-50 mb-4">
-          GCP Learning Projects V2
+          GCP Learning Projects
         </h1>
         <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-8">
           Welcome to the Google Cloud Platform learning project demos. Explore various GCP services
