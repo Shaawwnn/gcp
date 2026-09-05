@@ -18,7 +18,7 @@
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
-        "source": "/api/helloWorld",
+        "source": "/functions/helloWorld",
         "function": {
           "functionId": "helloWorldV2",
           "pinTag": true
