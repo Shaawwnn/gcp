@@ -4,8 +4,9 @@ import { useState } from "react";
 import EndpointButton from "./EndpointButton";
 import ErrorMessage from "./ErrorMessage";
 import ResponseDisplay from "./ResponseDisplay";
+import { API_BASE_URL } from "@/lib/apiBase";
 
-const BASE_URL = "https://cloud-run-learning-893652891651.us-central1.run.app/api";
+const BASE_URL = `${API_BASE_URL}/api`;
 
 interface Endpoint {
   path: string;

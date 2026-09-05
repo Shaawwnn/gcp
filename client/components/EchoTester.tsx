@@ -4,8 +4,9 @@ import { useState } from "react";
 import ErrorMessage from "./ErrorMessage";
 import JsonDisplay from "./JsonDisplay";
 import ResponseDisplay from "./ResponseDisplay";
+import { API_BASE_URL } from "@/lib/apiBase";
 
-const BASE_URL = "https://cloud-run-893652891651.asia-east1.run.app";
+const BASE_URL = `${API_BASE_URL}/api`;
 
 interface EchoResponse {
   echo: unknown;

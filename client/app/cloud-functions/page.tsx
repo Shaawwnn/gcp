@@ -44,7 +44,7 @@ export default function CloudFunctionsPage() {
           <div className="space-y-4">
             <div className="border-l-4 border-blue-600 pl-4">
               <Link
-                href="https://helloworld-52si5qeifq-uc.a.run.app"
+                href="/functions/helloWorld"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -56,7 +56,7 @@ export default function CloudFunctionsPage() {
                   Run Functions!&quot;.
                 </p>
                 <code className="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded text-sm">
-                  https://helloworld-52si5qeifq-uc.a.run.app
+                  /functions/helloWorld
                 </code>
               </Link>
             </div>

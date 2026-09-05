@@ -1,6 +1,7 @@
 import ApiTester from "@/components/ApiTester";
 import EchoTester from "@/components/EchoTester";
 import EndpointListItem from "@/components/EndpointListItem";
+import { API_BASE_URL } from "@/lib/apiBase";
 
 interface SectionCardProps {
   title: string;
@@ -29,9 +30,9 @@ export default function CloudRunPage() {
         <SectionCard title="Live Demo">
           <div className="space-y-4">
             <LinkInfo
-              label="Deployed Application URL:"
-              href="https://cloud-run-learning-893652891651.us-central1.run.app"
-              displayText="https://cloud-run-learning-893652891651.us-central1.run.app/"
+              label="API base path (routed to Cloud Run by Hosting):"
+              href={`${API_BASE_URL}/api`}
+              displayText={`${API_BASE_URL}/api`}
             />
             <LinkInfo
               label="Docker Image:"
