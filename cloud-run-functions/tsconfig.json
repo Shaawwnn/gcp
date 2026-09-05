@@ -5,14 +5,20 @@
     "moduleResolution": "nodenext",
     "noImplicitReturns": true,
     "noUnusedLocals": true,
-    "outDir": "lib",
-    "rootDir": ".",
     "sourceMap": true,
     "strict": true,
     "target": "es2017",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    // Typecheck only. esbuild.config.mjs produces the deployable bundle, which
+    // is what lets `@shared/*` resolve — tsc would emit the alias verbatim and
+    // Node could not resolve it at runtime.
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["../shared/*"]
+    }
   },
   "compileOnSave": true,
-  "include": ["src", "shared"],
+  "include": ["src"],
   "exclude": ["node_modules", "lib"]
 }

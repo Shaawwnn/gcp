@@ -3,18 +3,18 @@ import {
   HttpsError,
   Request,
 } from "firebase-functions/v2/https";
-import { Response } from "express";
+import type { Response } from "express";
 import { CloudTasksClient, protos } from "@google-cloud/tasks";
 import * as admin from "firebase-admin";
-import { TaskAction } from "../../shared/types";
+import { TaskAction } from "@shared/types";
 import type {
   CreateTaskRequest,
   CreateTaskResponse,
   ListTasksResponse,
   TaskData,
   CloudTask as SharedCloudTask,
-} from "../../shared/types";
-import { TASK_TYPES } from "../../shared/constants";
+} from "@shared/types";
+import { TASK_TYPES } from "@shared/constants";
 export type CloudTask = protos.google.cloud.tasks.v2.ITask;
 
 // Initialize Cloud Tasks client

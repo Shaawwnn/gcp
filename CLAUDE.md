@@ -52,14 +52,18 @@ Client code must use **relative** `/api/...` paths via `API_BASE_URL` (`client/l
 
 **Security posture.** `firestore.rules` and `storage.rules` are deliberately open (`allow read, write: if true`, demo-only). Server-side guards are the real defense — e.g. `bigquery.handlers.ts` rejects non-`SELECT` queries and clamps to 25 rows. Keep validation in the handler.
 
-## Shared code — important gotcha
+## Shared code
 
-`shared/types` and `shared/constants` exist **twice**, as identical committed copies:
+Top-level `shared/` is the single source of truth, imported by **both** workspaces through the same `@shared/*` tsconfig alias. There are no copies — always edit `shared/` directly, and never introduce a relative `../../shared` import.
 
-- `shared/` — the client imports these via the `@shared/*` tsconfig alias
-- `cloud-run-functions/shared/` — functions import them relatively (`"../../shared/types"`), because Firebase deploys only the `cloud-run-functions` directory
+`shared/` emits real JavaScript (`TaskAction` is an `enum`, `shared/constants` is ~12 runtime consts), so it can't rely on type erasure. Each workspace resolves the alias with a bundler, not `tsc`:
 
-Nothing syncs them. **Change a shared type and you must edit both copies**, or they drift silently. `cloud-run-functions/tsconfig.json` uses `rootDir: "."` with `include: ["src", "shared"]`, which is why the built entrypoint is `lib/src/index.js`.
+- `client/` — `tsc` runs with `noEmit`; Next.js resolves `@shared/*` and inlines it into `client/out`
+- `cloud-run-functions/` — `tsc` runs with `noEmit` for typechecking only; `esbuild.config.mjs` bundles `src/index.ts` plus the shared code it uses into a self-contained `lib/index.js` (`main` points there). Runtime deps stay external — Firebase installs them from `package.json`.
+
+This split exists because `firebase deploy` uploads only the `cloud-run-functions` directory while `tsc` emits import specifiers **verbatim** (tsconfig `paths` is typechecker-only). A plain `tsc` build would ship `require("@shared/types")` and fail at runtime with `MODULE_NOT_FOUND`; `rootDir` also refuses inputs outside itself. Bundling sidesteps both. `git log` for `cloud-run-functions/shared` shows the earlier workaround — a hand-maintained copy — if you need the history.
+
+Practical consequences: `yarn --cwd cloud-run-functions build` = typecheck then bundle, so **always build before deploying** (a stale `lib/index.js` deploys silently). Deployed stack traces point into the bundle, mitigated by the emitted `lib/index.js.map`. And `shared/` is no longer covered by the functions ESLint config — it currently has no linter of its own.
 
 ## Conventions
 
