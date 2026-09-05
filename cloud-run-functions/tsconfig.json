@@ -13,7 +13,8 @@
     // is what lets `@shared/*` resolve — tsc would emit the alias verbatim and
     // Node could not resolve it at runtime.
     "noEmit": true,
-    "baseUrl": ".",
+    // No baseUrl: it is deprecated in TS 5 and removed in 7. Without it, paths
+    // resolve relative to this file's directory (same as client/tsconfig.json).
     "paths": {
       "@shared/*": ["../shared/*"]
     }
