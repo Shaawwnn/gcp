@@ -40,8 +40,8 @@ docker push us-central1-docker.pkg.dev/PROJECT_ID/cloud-run-apps/nextjs:v1
 ## Usage in clouddeploy.yaml
 
 ```yaml
-- name: 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/nextjs:v1'
-  args: ['cd client && yarn build']
+- name: "us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/nextjs:v1"
+  args: ["cd client && yarn build"]
 ```
 
 ## What It Does
@@ -61,4 +61,3 @@ docker push us-central1-docker.pkg.dev/PROJECT_ID/cloud-run-apps/nextjs:v1
 - **Faster builds** - Image is cached, no repeated installations
 - **Consistent** - Same tools across all builds
 - **Cleaner** - Dedicated image for Next.js builds
-

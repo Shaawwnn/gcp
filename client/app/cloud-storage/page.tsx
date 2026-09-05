@@ -10,7 +10,8 @@ export default function CloudStoragePage() {
           Cloud Storage Demo
         </h1>
         <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-8">
-          Explore Google Cloud Storage with a collaborative &quot;Picture of the Day&quot; feature.
+          Explore Google Cloud Storage with a collaborative &quot;Picture of the
+          Day&quot; feature.
         </p>
 
         <div className="bg-white dark:bg-zinc-900 rounded-lg p-6 shadow-sm mb-6">
@@ -43,9 +44,9 @@ export default function CloudStoragePage() {
             Picture of the Day
           </h2>
           <p className="text-zinc-700 dark:text-zinc-300 mb-4">
-            A collaborative feature where anyone can upload or replace the current picture.
-            Only one picture is stored at a time - the latest upload becomes the new picture
-            of the day!
+            A collaborative feature where anyone can upload or replace the
+            current picture. Only one picture is stored at a time - the latest
+            upload becomes the new picture of the day!
           </p>
           <div className="border-t border-zinc-200 dark:border-zinc-800 pt-4">
             <PictureOfTheDay />
@@ -64,8 +65,9 @@ export default function CloudStoragePage() {
               <div>
                 <h3 className="font-semibold mb-1">Single File Storage</h3>
                 <p className="text-sm">
-                  Only one picture is stored at a time. When someone uploads a new image,
-                  it replaces the previous one - keeping storage clean and simple.
+                  Only one picture is stored at a time. When someone uploads a
+                  new image, it replaces the previous one - keeping storage
+                  clean and simple.
                 </p>
               </div>
             </div>
@@ -77,8 +79,9 @@ export default function CloudStoragePage() {
               <div>
                 <h3 className="font-semibold mb-1">Direct Upload</h3>
                 <p className="text-sm">
-                  Files are uploaded directly from your browser to Cloud Storage using
-                  the Firebase SDK - no server processing needed for uploads!
+                  Files are uploaded directly from your browser to Cloud Storage
+                  using the Firebase SDK - no server processing needed for
+                  uploads!
                 </p>
               </div>
             </div>
@@ -90,8 +93,8 @@ export default function CloudStoragePage() {
               <div>
                 <h3 className="font-semibold mb-1">Metadata in Firestore</h3>
                 <p className="text-sm">
-                  File information (name, size, upload time, URL) is stored in Firestore,
-                  allowing for real-time updates and easy querying.
+                  File information (name, size, upload time, URL) is stored in
+                  Firestore, allowing for real-time updates and easy querying.
                 </p>
               </div>
             </div>
@@ -103,8 +106,9 @@ export default function CloudStoragePage() {
               <div>
                 <h3 className="font-semibold mb-1">Public Display</h3>
                 <p className="text-sm">
-                  Everyone sees the same picture. It&apos;s a collaborative, community-driven
-                  feature that demonstrates how Cloud Storage can power shared content.
+                  Everyone sees the same picture. It&apos;s a collaborative,
+                  community-driven feature that demonstrates how Cloud Storage
+                  can power shared content.
                 </p>
               </div>
             </div>
@@ -114,5 +118,3 @@ export default function CloudStoragePage() {
     </div>
   );
 }
-
-

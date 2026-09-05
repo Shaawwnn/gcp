@@ -9,14 +9,18 @@ This repository serves as a collection of hands-on projects, tutorials, and expe
 ## Current Demos
 
 ### 1. Cloud Run
+
 Serverless container deployment demo with interactive API testing.
+
 - Live endpoints
 - API documentation
 - Echo endpoint with custom JSON
 - Health checks and service info
 
 ### 2. Cloud Functions (Firebase)
+
 Serverless function deployments with various triggers.
+
 - HTTP-triggered functions
 - Callable functions (getCatImageUrl)
 - Firestore triggers (onCreate, onUpdate)
@@ -24,7 +28,9 @@ Serverless function deployments with various triggers.
 - Pub/Sub triggers for message processing
 
 ### 3. Cloud Storage
+
 File storage and management with direct client-side operations.
+
 - **Direct file upload** from browser (drag & drop)
 - **List files** with metadata (size, type, date)
 - **Download files** using direct URLs
@@ -34,7 +40,9 @@ File storage and management with direct client-side operations.
 **Architecture Highlight**: Uses **client-side Firebase Storage SDK** for all operations (no Cloud Functions needed), making it faster and more cost-effective. Only signed URLs require server-side generation.
 
 ### 4. Pub/Sub
+
 Real-time messaging service with event-driven architecture.
+
 - **Publish messages** to topics with custom attributes
 - **Real-time message viewer** showing processing status
 - **Cloud Function subscriber** that processes messages automatically
@@ -44,7 +52,9 @@ Real-time messaging service with event-driven architecture.
 **Architecture Highlight**: Demonstrates asynchronous message processing with real-time UI updates via Firestore listeners.
 
 ### 5. Cloud Tasks
+
 Asynchronous task processing with guaranteed execution and retries.
+
 - **Create tasks** with various action types (send email, process image, generate report, etc.)
 - **Schedule delayed execution** - run tasks immediately or schedule for future
 - **Real-time status tracking** - watch tasks progress from queued → processing → completed
@@ -54,7 +64,9 @@ Asynchronous task processing with guaranteed execution and retries.
 **Architecture Highlight**: Demonstrates queued, reliable task execution vs. Pub/Sub's fire-and-forget pattern. Perfect for background jobs that need guaranteed execution.
 
 ### 6. BigQuery
+
 Serverless data warehouse for running SQL queries on massive datasets.
+
 - **Run SQL queries** on Google's public datasets
 - **Interactive query editor** with syntax highlighting
 - **Sample queries** for popular datasets (USA Names, COVID-19, Hacker News, etc.)
@@ -66,6 +78,7 @@ Serverless data warehouse for running SQL queries on massive datasets.
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js 22+
 - Yarn
 - Firebase CLI (`npm install -g firebase-tools`)
@@ -85,6 +98,7 @@ yarn emulators:all
 ```
 
 ### Development URLs
+
 - **Client**: http://localhost:3000
 - **Firebase Emulator UI**: http://localhost:4000
 - **Functions**: http://localhost:5001

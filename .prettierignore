@@ -1,0 +1,8 @@
+node_modules
+.next
+out
+lib
+dist
+.firebase
+yarn.lock
+package-lock.json

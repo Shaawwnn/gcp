@@ -50,7 +50,9 @@ export default function MessagePublisher({
       setAttributes("");
       onPublishSuccess();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to publish message");
+      setError(
+        err instanceof Error ? err.message : "Failed to publish message"
+      );
     } finally {
       setIsPublishing(false);
     }
@@ -175,4 +177,3 @@ function SuccessDisplay({ message }: SuccessDisplayProps) {
     </div>
   );
 }
-

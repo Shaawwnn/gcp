@@ -76,7 +76,11 @@ export default function PubSubPage() {
                 <p className="text-sm">
                   You publish a message to a Pub/Sub topic using the callable
                   Cloud Function. The message is immediately stored in Firestore
-                  with status <span className="font-mono bg-zinc-100 dark:bg-zinc-800 px-1 rounded">&quot;published&quot;</span> and appears in the UI with a blue badge.
+                  with status{" "}
+                  <span className="font-mono bg-zinc-100 dark:bg-zinc-800 px-1 rounded">
+                    &quot;published&quot;
+                  </span>{" "}
+                  and appears in the UI with a blue badge.
                 </p>
               </div>
             </div>
@@ -86,11 +90,16 @@ export default function PubSubPage() {
                 2
               </span>
               <div>
-                <h3 className="font-semibold mb-1">Message Queued in Pub/Sub</h3>
+                <h3 className="font-semibold mb-1">
+                  Message Queued in Pub/Sub
+                </h3>
                 <p className="text-sm">
                   The message is published to Google Cloud Pub/Sub topic{" "}
-                  <span className="font-mono bg-zinc-100 dark:bg-zinc-800 px-1 rounded">&quot;demo-topic&quot;</span>.
-                  The publisher returns immediately without waiting for processing.
+                  <span className="font-mono bg-zinc-100 dark:bg-zinc-800 px-1 rounded">
+                    &quot;demo-topic&quot;
+                  </span>
+                  . The publisher returns immediately without waiting for
+                  processing.
                 </p>
               </div>
             </div>
@@ -100,12 +109,17 @@ export default function PubSubPage() {
                 3
               </span>
               <div>
-                <h3 className="font-semibold mb-1">Subscriber Triggered (5s Delay)</h3>
+                <h3 className="font-semibold mb-1">
+                  Subscriber Triggered (5s Delay)
+                </h3>
                 <p className="text-sm">
-                  The Cloud Function subscriber is automatically triggered by Pub/Sub.
-                  It waits 5 seconds (to demonstrate async processing), then updates
-                  the Firestore document status to <span className="font-mono bg-zinc-100 dark:bg-zinc-800 px-1 rounded">&quot;processed&quot;</span> with
-                  processing details and timestamp.
+                  The Cloud Function subscriber is automatically triggered by
+                  Pub/Sub. It waits 5 seconds (to demonstrate async processing),
+                  then updates the Firestore document status to{" "}
+                  <span className="font-mono bg-zinc-100 dark:bg-zinc-800 px-1 rounded">
+                    &quot;processed&quot;
+                  </span>{" "}
+                  with processing details and timestamp.
                 </p>
               </div>
             </div>
@@ -117,10 +131,16 @@ export default function PubSubPage() {
               <div>
                 <h3 className="font-semibold mb-1">Real-time UI Update</h3>
                 <p className="text-sm">
-                  The UI has a real-time Firestore listener that detects the change.
-                  The badge automatically changes from blue <span className="font-mono bg-zinc-100 dark:bg-zinc-800 px-1 rounded">&quot;⏳ Published&quot;</span> to
-                  green <span className="font-mono bg-zinc-100 dark:bg-zinc-800 px-1 rounded">&quot;✓ Processed&quot;</span> without
-                  refreshing the page!
+                  The UI has a real-time Firestore listener that detects the
+                  change. The badge automatically changes from blue{" "}
+                  <span className="font-mono bg-zinc-100 dark:bg-zinc-800 px-1 rounded">
+                    &quot;⏳ Published&quot;
+                  </span>{" "}
+                  to green{" "}
+                  <span className="font-mono bg-zinc-100 dark:bg-zinc-800 px-1 rounded">
+                    &quot;✓ Processed&quot;
+                  </span>{" "}
+                  without refreshing the page!
                 </p>
               </div>
             </div>
@@ -144,4 +164,3 @@ function SectionCard({ title, children, description }: SectionCardProps) {
     </div>
   );
 }
-

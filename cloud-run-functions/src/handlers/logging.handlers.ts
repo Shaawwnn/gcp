@@ -113,15 +113,15 @@ const buildLogFilter = (
   // Filter by service (resource type)
   if (service && service !== LogService.ALL) {
     switch (service) {
-    case LogService.CLOUD_FUNCTIONS:
-      filters.push("resource.type=\"cloud_function\"");
-      break;
-    case LogService.CLOUD_RUN:
-      filters.push("resource.type=\"cloud_run_revision\"");
-      break;
-    case LogService.CLOUD_BUILD:
-      filters.push("resource.type=\"build\"");
-      break;
+      case LogService.CLOUD_FUNCTIONS:
+        filters.push('resource.type="cloud_function"');
+        break;
+      case LogService.CLOUD_RUN:
+        filters.push('resource.type="cloud_run_revision"');
+        break;
+      case LogService.CLOUD_BUILD:
+        filters.push('resource.type="build"');
+        break;
     }
   }
 
@@ -187,9 +187,10 @@ export const fetchLogsHandler = async (request: CallableRequest) => {
           metadata.resource?.labels?.function_name ||
           metadata.resource?.labels?.build_id ||
           "unknown",
-        message: typeof entry.data === "string" ?
-          entry.data :
-          JSON.stringify(entry.data),
+        message:
+          typeof entry.data === "string"
+            ? entry.data
+            : JSON.stringify(entry.data),
         labels: metadata.labels || {},
         resource: metadata.resource,
       };

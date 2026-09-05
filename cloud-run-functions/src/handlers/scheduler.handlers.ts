@@ -35,4 +35,3 @@ export const scheduledTaskHandler = async () => {
 
   logger.info("Scheduled execution logged to Firestore", executionData);
 };
-

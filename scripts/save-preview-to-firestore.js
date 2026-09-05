@@ -57,7 +57,9 @@ async function main() {
   // ---------------------------------------------------------------------------
   const existing = await docRef.get();
   if (existing.exists) {
-    console.error(`❌ ERROR: Document "${TAG_NAME}" already exists. No updates allowed.`);
+    console.error(
+      `❌ ERROR: Document "${TAG_NAME}" already exists. No updates allowed.`
+    );
     process.exit(1);
   }
 

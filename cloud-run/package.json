@@ -12,7 +12,12 @@
     "type-check": "tsc --noEmit",
     "type-check:watch": "tsc --noEmit --watch"
   },
-  "keywords": ["cloud-run", "typescript", "express", "gcp"],
+  "keywords": [
+    "cloud-run",
+    "typescript",
+    "express",
+    "gcp"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {

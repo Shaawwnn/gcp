@@ -12,7 +12,8 @@ export enum TaskAction {
   BACKUP_DATA = "backup_data",
 }
 
-export type TaskStatus = "queued" | "scheduled" | "processing" | "completed" | "failed";
+export type TaskStatus =
+  "queued" | "scheduled" | "processing" | "completed" | "failed";
 
 export interface TaskData {
   recipient?: string;

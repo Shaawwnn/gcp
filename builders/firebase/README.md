@@ -32,8 +32,8 @@ docker push us-central1-docker.pkg.dev/future-cat-475815-c2/cloud-run-apps/fireb
 ## Usage in clouddeploy.yaml
 
 ```yaml
-- name: 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/firebase'
-  args: ['deploy', '--only', 'functions']
+- name: "us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/firebase"
+  args: ["deploy", "--only", "functions"]
 ```
 
 ## Features
@@ -53,4 +53,3 @@ docker push us-central1-docker.pkg.dev/future-cat-475815-c2/cloud-run-apps/fireb
 - **Faster builds** - No need to install firebase-tools every time
 - **Consistent** - Same version across all builds
 - **Cached** - Emulators pre-downloaded
-

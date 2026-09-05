@@ -71,7 +71,7 @@ export default function BigQueryRunner() {
       )}
 
       {/* Query Editor */}
-      <QueryEditor 
+      <QueryEditor
         query={query}
         onChange={setQuery}
         onRun={handleRunQuery}
@@ -147,7 +147,8 @@ function QueryEditor({ query, onChange, onRun, loading }: QueryEditorProps) {
           Only SELECT queries are allowed. Use backticks for table names.
         </p>
         <p className="text-xs text-amber-600 dark:text-amber-400 font-semibold">
-          ⚠️ All queries are automatically limited to 25 rows maximum for cost control.
+          ⚠️ All queries are automatically limited to 25 rows maximum for cost
+          control.
         </p>
       </div>
       <button
@@ -169,7 +170,9 @@ function QueryResults({ results }: QueryResultsProps) {
   if (results.length === 0) {
     return (
       <div className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-8 text-center">
-        <p className="text-zinc-600 dark:text-zinc-400">Query returned 0 rows</p>
+        <p className="text-zinc-600 dark:text-zinc-400">
+          Query returned 0 rows
+        </p>
       </div>
     );
   }
@@ -241,4 +244,3 @@ function formatValue(value: unknown): string {
   }
   return String(value);
 }
-

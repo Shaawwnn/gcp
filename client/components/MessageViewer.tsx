@@ -177,10 +177,7 @@ interface TimestampDisplayProps {
   processedAt: Timestamp | null;
 }
 
-function TimestampDisplay({
-  publishedAt,
-  processedAt,
-}: TimestampDisplayProps) {
+function TimestampDisplay({ publishedAt, processedAt }: TimestampDisplayProps) {
   return (
     <div className="mt-2 text-xs text-zinc-600 dark:text-zinc-400 space-y-0.5">
       <p>
@@ -196,4 +193,3 @@ function TimestampDisplay({
     </div>
   );
 }
-

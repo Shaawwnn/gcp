@@ -3,68 +3,68 @@
 # Purpose: Validate code quality before deployment
 
 # Use custom service account with limited permissions (read-only for CI checks)
-serviceAccount: 'projects/future-cat-475815-c2/serviceAccounts/cloud-build-deploy@future-cat-475815-c2.iam.gserviceaccount.com'
+serviceAccount: "projects/future-cat-475815-c2/serviceAccounts/cloud-build-deploy@future-cat-475815-c2.iam.gserviceaccount.com"
 
 options:
   logging: CLOUD_LOGGING_ONLY
 
 steps:
   # Step 1: Install workspace dependencies
-  - id: 'install-dependencies'
-    name: 'node:22-alpine'
-    entrypoint: 'yarn'
-    args: ['install', '--frozen-lockfile']
-    waitFor: ['-']
+  - id: "install-dependencies"
+    name: "node:22-alpine"
+    entrypoint: "yarn"
+    args: ["install", "--frozen-lockfile"]
+    waitFor: ["-"]
 
   # ============================================
   # LINT CHECKS
   # ============================================
 
   # Step 2: Lint Cloud Run Functions
-  - id: 'lint-functions'
-    name: 'node:22-alpine'
-    entrypoint: 'yarn'
-    args: ['--cwd', 'cloud-run-functions', 'lint']
-    waitFor: ['install-dependencies']
+  - id: "lint-functions"
+    name: "node:22-alpine"
+    entrypoint: "yarn"
+    args: ["--cwd", "cloud-run-functions", "lint"]
+    waitFor: ["install-dependencies"]
 
   # Step 3: Lint Client (Next.js)
-  - id: 'lint-client'
-    name: 'node:22-alpine'
-    entrypoint: 'yarn'
-    args: ['--cwd', 'client', 'lint']
-    waitFor: ['install-dependencies']
+  - id: "lint-client"
+    name: "node:22-alpine"
+    entrypoint: "yarn"
+    args: ["--cwd", "client", "lint"]
+    waitFor: ["install-dependencies"]
 
   # Step 4: Lint Cloud Run
-  - id: 'lint-cloud-run'
-    name: 'node:22-alpine'
-    entrypoint: 'yarn'
-    args: ['--cwd', 'cloud-run', 'lint']
-    waitFor: ['install-dependencies']
+  - id: "lint-cloud-run"
+    name: "node:22-alpine"
+    entrypoint: "yarn"
+    args: ["--cwd", "cloud-run", "lint"]
+    waitFor: ["install-dependencies"]
 
   # ============================================
   # TYPESCRIPT BUILD CHECKS
   # ============================================
 
   # Step 5: TypeScript build - Cloud Run Functions
-  - id: 'tsc-functions'
-    name: 'node:22-alpine'
-    entrypoint: 'yarn'
-    args: ['--cwd', 'cloud-run-functions', 'build']
-    waitFor: ['lint-functions']
+  - id: "tsc-functions"
+    name: "node:22-alpine"
+    entrypoint: "yarn"
+    args: ["--cwd", "cloud-run-functions", "build"]
+    waitFor: ["lint-functions"]
 
   # Step 6: TypeScript build - Client (Next.js)
-  - id: 'tsc-client'
-    name: 'node:22-alpine'
-    entrypoint: 'yarn'
-    args: ['--cwd', 'client', 'build']
-    waitFor: ['lint-client']
+  - id: "tsc-client"
+    name: "node:22-alpine"
+    entrypoint: "yarn"
+    args: ["--cwd", "client", "build"]
+    waitFor: ["lint-client"]
 
   # Step 7: TypeScript build - Cloud Run
-  - id: 'tsc-cloud-run'
-    name: 'node:22-alpine'
-    entrypoint: 'yarn'
-    args: ['--cwd', 'cloud-run', 'build']
-    waitFor: ['lint-cloud-run']
+  - id: "tsc-cloud-run"
+    name: "node:22-alpine"
+    entrypoint: "yarn"
+    args: ["--cwd", "cloud-run", "build"]
+    waitFor: ["lint-cloud-run"]
 
   # ============================================
   # UNIT TESTS (Future Implementation)
@@ -92,4 +92,4 @@ steps:
   #   waitFor: ['tsc-cloud-run']
 
 # Timeout for the entire build
-timeout: '20m'
+timeout: "20m"

@@ -52,8 +52,8 @@ export default function CloudFunctionsPage() {
                   Live Demo
                 </h2>
                 <p className="text-zinc-700 dark:text-zinc-300 mb-2">
-                  A simple HTTP function that responds with &quot;Hello from Cloud
-                  Run Functions!&quot;.
+                  A simple HTTP function that responds with &quot;Hello from
+                  Cloud Run Functions!&quot;.
                 </p>
                 <code className="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded text-sm">
                   /functions/helloWorld

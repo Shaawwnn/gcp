@@ -2,9 +2,23 @@
 
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { uploadFile, formatFileSize, isImageFile, deleteFile } from "@/lib/storage";
+import {
+  uploadFile,
+  formatFileSize,
+  isImageFile,
+  deleteFile,
+} from "@/lib/storage";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, getDocs, query, orderBy, limit, deleteDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  orderBy,
+  limit,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 
 interface PictureMetadata {
   id: string;
@@ -38,12 +52,12 @@ export default function PictureOfTheDay() {
         limit(MAX_PICTURES)
       );
       const querySnapshot = await getDocs(q);
-      
+
       const picturesList: PictureMetadata[] = [];
       querySnapshot.forEach((doc) => {
         picturesList.push({ id: doc.id, ...doc.data() } as PictureMetadata);
       });
-      
+
       setPictures(picturesList);
     } catch (err) {
       console.error("Error loading pictures:", err);
@@ -68,7 +82,9 @@ export default function PictureOfTheDay() {
 
       // Check file size
       if (file.size > MAX_FILE_SIZE) {
-        setError(`File size exceeds 10MB limit. Selected file is ${formatFileSize(file.size)}`);
+        setError(
+          `File size exceeds 10MB limit. Selected file is ${formatFileSize(file.size)}`
+        );
         setSelectedFile(null);
         return;
       }
@@ -92,22 +108,25 @@ export default function PictureOfTheDay() {
       // Check if we need to delete the oldest picture
       if (pictures.length >= MAX_PICTURES) {
         const oldestPicture = pictures[pictures.length - 1];
-        
-        console.log('Deleting oldest picture:', oldestPicture);
-        
+
+        console.log("Deleting oldest picture:", oldestPicture);
+
         // Validate storage path exists
-        if (oldestPicture.storagePath && oldestPicture.storagePath.trim() !== '') {
+        if (
+          oldestPicture.storagePath &&
+          oldestPicture.storagePath.trim() !== ""
+        ) {
           try {
             // Delete from Storage
             await deleteFile(oldestPicture.storagePath);
           } catch (deleteError) {
-            console.error('Failed to delete file from storage:', deleteError);
+            console.error("Failed to delete file from storage:", deleteError);
             // Continue anyway - we'll still delete from Firestore
           }
         } else {
-          console.warn('Oldest picture missing storagePath:', oldestPicture);
+          console.warn("Oldest picture missing storagePath:", oldestPicture);
         }
-        
+
         // Delete from Firestore
         await deleteDoc(doc(db, "picture_of_the_day", oldestPicture.id));
       }
@@ -115,7 +134,7 @@ export default function PictureOfTheDay() {
       // Upload new picture with timestamp
       const timestamp = Date.now();
       const storagePath = `picture-of-the-day/${timestamp}-${selectedFile.name}`;
-      
+
       const downloadUrl = await uploadFile(
         selectedFile,
         (progress) => {
@@ -144,9 +163,7 @@ export default function PictureOfTheDay() {
       // Reload pictures
       await loadPictures();
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to upload file"
-      );
+      setError(err instanceof Error ? err.message : "Failed to upload file");
       setUploadProgress(0);
     } finally {
       setUploading(false);
@@ -171,7 +188,9 @@ export default function PictureOfTheDay() {
       }
 
       if (file.size > MAX_FILE_SIZE) {
-        setError(`File size exceeds 10MB limit. Selected file is ${formatFileSize(file.size)}`);
+        setError(
+          `File size exceeds 10MB limit. Selected file is ${formatFileSize(file.size)}`
+        );
         setSelectedFile(null);
         return;
       }
@@ -207,7 +226,8 @@ export default function PictureOfTheDay() {
       {!loading && pictures.length === 0 && (
         <div className="text-center py-8 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
           <p className="text-zinc-600 dark:text-zinc-400">
-            No picture uploaded yet. Be the first to upload the picture of the day!
+            No picture uploaded yet. Be the first to upload the picture of the
+            day!
           </p>
         </div>
       )}
@@ -248,7 +268,11 @@ export default function PictureOfTheDay() {
             disabled={!selectedFile || uploading}
             className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-zinc-300 disabled:cursor-not-allowed dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
           >
-            {uploading ? "Uploading..." : pictures.length > 0 ? "Replace Picture" : "Upload Picture"}
+            {uploading
+              ? "Uploading..."
+              : pictures.length > 0
+                ? "Replace Picture"
+                : "Upload Picture"}
           </button>
         </div>
       </div>
@@ -261,20 +285,26 @@ interface CurrentPictureDisplayProps {
   formatDate: (date: string) => string;
 }
 
-function CurrentPictureDisplay({ picture, formatDate }: CurrentPictureDisplayProps) {
+function CurrentPictureDisplay({
+  picture,
+  formatDate,
+}: CurrentPictureDisplayProps) {
   return (
     <div className="bg-white dark:bg-zinc-900 rounded-lg p-6 shadow-sm">
       <h3 className="text-xl font-semibold text-black dark:text-zinc-50 mb-4">
         Picture of the Day
       </h3>
-      <div className="mb-4 rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-800 relative w-full" style={{ minHeight: '200px' }}>
+      <div
+        className="mb-4 rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-800 relative w-full"
+        style={{ minHeight: "200px" }}
+      >
         <Image
           src={picture.downloadUrl}
           alt="Picture of the Day"
           width={800}
           height={600}
           className="w-full h-auto max-h-96 object-contain"
-          style={{ width: '100%', height: 'auto' }}
+          style={{ width: "100%", height: "auto" }}
         />
       </div>
       <div className="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
@@ -282,10 +312,12 @@ function CurrentPictureDisplay({ picture, formatDate }: CurrentPictureDisplayPro
           <span className="font-semibold">File:</span> {picture.fileName}
         </p>
         <p>
-          <span className="font-semibold">Size:</span> {formatFileSize(picture.fileSize)}
+          <span className="font-semibold">Size:</span>{" "}
+          {formatFileSize(picture.fileSize)}
         </p>
         <p>
-          <span className="font-semibold">Uploaded:</span> {formatDate(picture.uploadedAt)}
+          <span className="font-semibold">Uploaded:</span>{" "}
+          {formatDate(picture.uploadedAt)}
         </p>
       </div>
     </div>
@@ -296,7 +328,9 @@ function LoadingState() {
   return (
     <div className="text-center py-8">
       <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400"></div>
-      <p className="mt-2 text-zinc-600 dark:text-zinc-400">Loading pictures...</p>
+      <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+        Loading pictures...
+      </p>
     </div>
   );
 }
@@ -365,7 +399,11 @@ interface SelectedFileDisplayProps {
   onRemove: () => void;
 }
 
-function SelectedFileDisplay({ file, uploading, onRemove }: SelectedFileDisplayProps) {
+function SelectedFileDisplay({
+  file,
+  uploading,
+  onRemove,
+}: SelectedFileDisplayProps) {
   return (
     <div className="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4">
       <div className="flex items-center justify-between">
@@ -434,4 +472,3 @@ function ErrorDisplay({ message }: ErrorDisplayProps) {
     </div>
   );
 }
-

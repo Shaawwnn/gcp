@@ -6,13 +6,20 @@ import type { CreateTaskRequest, TaskAction } from "@shared/types";
 import { TASK_TYPES, MAX_SCHEDULE_DELAY_SECONDS } from "@shared/constants";
 
 export default function TaskCreator() {
-  const [selectedAction, setSelectedAction] = useState<string>(TASK_TYPES[0].action);
+  const [selectedAction, setSelectedAction] = useState<string>(
+    TASK_TYPES[0].action
+  );
   const [taskData, setTaskData] = useState<Record<string, string>>({});
   const [scheduleDelay, setScheduleDelay] = useState(0);
   const [isCreating, setIsCreating] = useState(false);
-  const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
+  const [result, setResult] = useState<{
+    success: boolean;
+    message: string;
+  } | null>(null);
 
-  const selectedTaskType = TASK_TYPES.find((t) => t.action === selectedAction as TaskAction) || TASK_TYPES[0];
+  const selectedTaskType =
+    TASK_TYPES.find((t) => t.action === (selectedAction as TaskAction)) ||
+    TASK_TYPES[0];
 
   const handleCreateTask = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,7 +47,8 @@ export default function TaskCreator() {
     } catch (error) {
       setResult({
         success: false,
-        message: error instanceof Error ? error.message : "Failed to create task",
+        message:
+          error instanceof Error ? error.message : "Failed to create task",
       });
     } finally {
       setIsCreating(false);

@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf dist types/**/*.js types/**/*.d.ts types/**/*.js.map constants/**/*.js constants/**/*.d.ts constants/**/*.js.map",
-    "lint": "echo 'No linting configured for shared package'"
+    "lint": "npx prettier --check types constants"
   },
   "keywords": [
     "shared",

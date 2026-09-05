@@ -4,9 +4,16 @@ import { useEffect, useState } from "react";
 import { streamCollection } from "@/lib/firebase";
 import { Timestamp } from "firebase/firestore";
 import type { CloudTask } from "@shared/types";
-import { STATUS_STYLES, STATUS_ICONS, DEFAULT_TASK_LIMIT } from "@shared/constants";
+import {
+  STATUS_STYLES,
+  STATUS_ICONS,
+  DEFAULT_TASK_LIMIT,
+} from "@shared/constants";
 
-type ClientCloudTask = Omit<CloudTask, "createdAt" | "processingStartedAt" | "completedAt" | "failedAt"> & {
+type ClientCloudTask = Omit<
+  CloudTask,
+  "createdAt" | "processingStartedAt" | "completedAt" | "failedAt"
+> & {
   createdAt: Timestamp;
   processingStartedAt?: Timestamp;
   completedAt?: Timestamp;
@@ -37,7 +44,9 @@ export default function TaskViewer() {
     return (
       <div className="text-center py-8">
         <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400"></div>
-        <p className="mt-2 text-zinc-500 dark:text-zinc-400">Loading tasks...</p>
+        <p className="mt-2 text-zinc-500 dark:text-zinc-400">
+          Loading tasks...
+        </p>
       </div>
     );
   }
@@ -107,7 +116,8 @@ export default function TaskViewer() {
 
               {task.result && (
                 <div className="text-xs mt-2 p-2 bg-zinc-100 dark:bg-zinc-800 rounded text-zinc-700 dark:text-zinc-300">
-                  <span className="font-semibold">Result:</span> {task.result.message}
+                  <span className="font-semibold">Result:</span>{" "}
+                  {task.result.message}
                 </div>
               )}
               {task.error && (

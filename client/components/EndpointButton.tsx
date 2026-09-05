@@ -28,4 +28,3 @@ export default function EndpointButton({
     </button>
   );
 }
-

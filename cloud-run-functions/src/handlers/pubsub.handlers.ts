@@ -12,10 +12,7 @@ export const publishMessageHandler = async (request: CallableRequest) => {
   const { topic, message, attributes } = request.data;
 
   if (!topic || !message) {
-    throw new HttpsError(
-      "invalid-argument",
-      "Topic and message are required"
-    );
+    throw new HttpsError("invalid-argument", "Topic and message are required");
   }
 
   try {
@@ -98,4 +95,3 @@ export const processPubSubMessageHandler = async (
     throw error;
   }
 };
-

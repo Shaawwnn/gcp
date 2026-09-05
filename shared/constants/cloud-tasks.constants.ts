@@ -22,7 +22,11 @@ export const TASK_TYPES: TaskTypeDefinition[] = [
     label: "Send Email",
     description: "Simulate sending an email (2s delay)",
     dataFields: [
-      { name: "recipient", label: "Recipient Email", placeholder: "user@example.com" },
+      {
+        name: "recipient",
+        label: "Recipient Email",
+        placeholder: "user@example.com",
+      },
     ],
     processingDuration: 2000,
   },
@@ -40,7 +44,11 @@ export const TASK_TYPES: TaskTypeDefinition[] = [
     label: "Generate Report",
     description: "Simulate report generation (4s delay)",
     dataFields: [
-      { name: "reportType", label: "Report Type", placeholder: "Monthly Sales" },
+      {
+        name: "reportType",
+        label: "Report Type",
+        placeholder: "Monthly Sales",
+      },
     ],
     processingDuration: 4000,
   },
@@ -56,11 +64,16 @@ export const TASK_TYPES: TaskTypeDefinition[] = [
 ];
 
 export const STATUS_STYLES = {
-  queued: "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600",
-  scheduled: "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 border-blue-300 dark:border-blue-700",
-  processing: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 border-yellow-300 dark:border-yellow-700",
-  completed: "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 border-green-300 dark:border-green-700",
-  failed: "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border-red-300 dark:border-red-700",
+  queued:
+    "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600",
+  scheduled:
+    "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 border-blue-300 dark:border-blue-700",
+  processing:
+    "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 border-yellow-300 dark:border-yellow-700",
+  completed:
+    "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 border-green-300 dark:border-green-700",
+  failed:
+    "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border-red-300 dark:border-red-700",
 } as const;
 
 export const STATUS_ICONS = {

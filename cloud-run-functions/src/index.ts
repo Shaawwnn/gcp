@@ -59,12 +59,12 @@ export const helloWorldV2 = onRequest(helloWorldHandler);
 
 export const firestoreOnCreateTrigger = onDocumentCreated(
   "todo_list/{id}",
-  onTodoCreatedHandler,
+  onTodoCreatedHandler
 );
 
 export const firestoreOnUpdateTrigger = onDocumentUpdated(
   "todo_list/{id}",
-  onTodoUpdatedHandler,
+  onTodoUpdatedHandler
 );
 
 // ============================================================================
@@ -111,5 +111,5 @@ export const scheduledTask = onSchedule("0 0 15 * *", scheduledTaskHandler);
 
 export const processPubSubMessage = onMessagePublished(
   "demo-topic",
-  processPubSubMessageHandler,
+  processPubSubMessageHandler
 );

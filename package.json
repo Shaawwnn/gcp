@@ -12,6 +12,8 @@
     "emulators": "firebase emulators:start --import=.firebase/emulator-data --export-on-exit=.firebase/emulator-data",
     "emulators:functions": "firebase emulators:start --only functions --import=.firebase/emulator-data --export-on-exit=.firebase/emulator-data",
     "emulators:all": "firebase emulators:start --only functions,firestore,pubsub,storage --import=.firebase/emulator-data --export-on-exit=.firebase/emulator-data",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "shared:build": "yarn --cwd shared build",
     "functions:build": "yarn shared:build && yarn --cwd cloud-run-functions build",
     "functions:serve": "yarn --cwd cloud-run-functions serve",
@@ -26,7 +28,9 @@
     "dev:functions": "concurrently \"yarn emulators:functions\" \"yarn client:dev\""
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.9.6"
   },
   "license": "MIT"
 }

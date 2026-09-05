@@ -145,7 +145,7 @@ export const processTaskHandler = async (req: Request, res: Response) => {
  * @return {Promise<CreateTaskResponse>} Response with task details
  */
 export const createTaskHandler = async (
-  request: CallableRequest,
+  request: CallableRequest
 ): Promise<CreateTaskResponse> => {
   const requestData = request.data as CreateTaskRequest;
   const { action, data, scheduleDelaySeconds } = requestData;
@@ -200,7 +200,7 @@ export const createTaskHandler = async (
             taskId,
             action,
             data: data || {},
-          }),
+          })
         ).toString("base64"),
       },
     };

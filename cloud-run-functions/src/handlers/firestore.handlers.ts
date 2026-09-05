@@ -51,4 +51,3 @@ export const onTodoUpdatedHandler = async (
       timestamp: FieldValue.serverTimestamp(),
     });
 };
-
