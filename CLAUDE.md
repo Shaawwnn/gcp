@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-A GCP learning monorepo: a Next.js frontend demoing one GCP service per page (Cloud Run, Cloud Functions, Storage, Pub/Sub, Cloud Tasks, BigQuery). `DEMOS.md` tracks done vs. planned. Project `future-cat-475815-c2`, region `us-central1`.
+A GCP learning monorepo: a Next.js frontend demoing one GCP service per page (Cloud Run, Cloud Functions, Storage, Pub/Sub, Cloud Tasks, BigQuery). `DEMOS.md` tracks done vs. planned. Project `future-cat-475815-c2`, region `asia-east1` — everything (functions, Cloud Run, Artifact Registry, Cloud Tasks) is co-located with Firestore, whose location is immutable and was created there. `GCP_REGION` in `shared/constants/regions.constants.ts` is the source of truth for code; `firebase.json`, `clouddeploy*.yaml`, `builders/*/build.sh` and `terraform/`'s `region` variable repeat the literal and must be changed together.
 
 ## Commands
 
@@ -85,4 +85,12 @@ Emulators are used only when `NODE_ENV === "development"` **and** `NEXT_PUBLIC_U
 - `clouddeploy.yaml` — production: build/push/deploy the Cloud Run image, build client, build functions, then one `firebase deploy --only functions,hosting`.
 - `clouddeploybeta.yaml` — tag builds: same until the last step, which runs `scripts/deploy-preview-channel.sh` to deploy a Hosting preview channel named after `$TAG_NAME` and record it in Firestore via `scripts/save-preview-to-firestore.js`.
 
-Both deploy configs pull prebuilt builder images (`firebase:v1`, `nextjs:v1`) from Artifact Registry — if a build fails pulling one, rebuild with `./builders/build-all.sh`. One-time project setup lives in `scripts/setup-*.sh`.
+Both deploy configs pull prebuilt builder images (`firebase:v1`, `nextjs:v1`) from Artifact Registry — if a build fails pulling one, rebuild with `./builders/build-all.sh`.
+
+## Terraform
+
+`terraform/` declares the project foundation — enabled APIs, the `cloud-run-apps` Artifact Registry repo, the `cloud-build-deploy` service account and its role bindings, the `demo-topic` topic, the `default` Cloud Tasks queue, and the `(default)` Firestore database. It replaced the three one-time setup scripts that used to live in `scripts/` (`setup-artifact-registry.sh`, `create-cloudbuild-sa.sh`, `setup-cloudbuild-permissions.sh`), which have been deleted — `git log` has them. What remains in `scripts/` is deploy-time only and still live.
+
+The split is deliberate: Terraform owns resources that must _exist_, while every application deploy stays with Cloud Build and `firebase deploy` — the Cloud Run service and its revisions, the Gen 2 functions (plus the Eventarc subscriptions and Scheduler job they create), Hosting and its preview channels, and the Firestore/Storage rules. Don't move a deployed artifact into Terraform; the two would fight over the same resource on every push.
+
+`region` defaults to `asia-east1` and must stay in step with `GCP_REGION`. State is in a GCS bucket created by `terraform/bootstrap` (run once, local state). Most resources are already live in the project, so they need `terraform import` before the first apply — the commands are in `terraform/README.md`. `google_firestore_database` and the state bucket carry `prevent_destroy`, and Firestore also uses `deletion_policy = "ABANDON"`; leave both in place. `location_id` on Firestore and the Cloud Tasks queue is immutable, so verify it matches before importing or the plan proposes a destroy-and-recreate. Run `terraform fmt` before committing.
