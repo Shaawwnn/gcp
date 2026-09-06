@@ -1,6 +1,7 @@
 import * as logger from "firebase-functions/logger";
 import { HttpsError, CallableRequest } from "firebase-functions/v2/https";
 import { BigQuery } from "@google-cloud/bigquery";
+import { MAX_BYTES_BILLED, MAX_QUERY_RESULTS } from "@shared/constants";
 
 const bigquery = new BigQuery();
 
@@ -11,34 +12,41 @@ export const runBigQueryHandler = async (request: CallableRequest) => {
     throw new HttpsError("invalid-argument", "SQL query is required");
   }
 
-  // Safety check: only allow SELECT queries
-  const trimmedQuery = sqlQuery.trim().toUpperCase();
-  if (!trimmedQuery.startsWith("SELECT")) {
+  // Drop a single trailing semicolon, then reject any remaining statement
+  // separator. BigQuery executes multi-statement scripts, so a prefix check
+  // alone lets "SELECT 1; DROP TABLE ..." through.
+  const trimmedQuery = sqlQuery.trim().replace(/;\s*$/, "");
+
+  if (trimmedQuery.includes(";")) {
+    throw new HttpsError(
+      "invalid-argument",
+      "Only a single statement is allowed"
+    );
+  }
+
+  // Read-only statements only. WITH is permitted so CTEs are not rejected.
+  if (!/^(SELECT|WITH)\b/i.test(trimmedQuery)) {
     throw new HttpsError(
       "invalid-argument",
       "Only SELECT queries are allowed for security reasons"
     );
   }
 
-  // Safety limiter: enforce max 25 rows
-  const MAX_ROWS = 25;
-  let modifiedQuery = sqlQuery.trim();
+  // Row limiter. A trailing LIMIT may carry an OFFSET, which has to be
+  // preserved — appending a second LIMIT after it would be invalid SQL.
+  const limitRegex = /\bLIMIT\s+(\d+)(\s+OFFSET\s+\d+)?\s*$/i;
+  const limitMatch = trimmedQuery.match(limitRegex);
+  const userLimit = limitMatch
+    ? parseInt(limitMatch[1], 10)
+    : MAX_QUERY_RESULTS;
+  const effectiveLimit = Math.min(userLimit, MAX_QUERY_RESULTS);
 
-  // Extract existing limit or use MAX_ROWS
-  const limitRegex = /\bLIMIT\s+(\d+)\s*$/i;
-  const limitMatch = modifiedQuery.match(limitRegex);
-  const userLimit = limitMatch ? parseInt(limitMatch[1], 10) : MAX_ROWS;
-  const effectiveLimit = Math.min(userLimit, MAX_ROWS);
-
-  // Apply the effective limit
-  if (limitMatch) {
-    modifiedQuery = modifiedQuery.replace(
-      limitRegex,
-      `LIMIT ${effectiveLimit}`
-    );
-  } else {
-    modifiedQuery += ` LIMIT ${effectiveLimit}`;
-  }
+  const modifiedQuery = limitMatch
+    ? trimmedQuery.replace(
+        limitRegex,
+        `LIMIT ${effectiveLimit}${limitMatch[2] ?? ""}`
+      )
+    : `${trimmedQuery} LIMIT ${effectiveLimit}`;
 
   try {
     logger.info("Running BigQuery query", { query: modifiedQuery });
@@ -46,6 +54,9 @@ export const runBigQueryHandler = async (request: CallableRequest) => {
     const options = {
       query: modifiedQuery,
       location: "US",
+      // Hard cost ceiling. The row limit above caps what comes back, not what
+      // gets scanned, which is what BigQuery actually bills for.
+      maximumBytesBilled: String(MAX_BYTES_BILLED),
     };
 
     const [job] = await bigquery.createQueryJob(options);
@@ -60,7 +71,7 @@ export const runBigQueryHandler = async (request: CallableRequest) => {
       rows,
       rowCount: rows.length,
       jobId: job.id,
-      limitEnforced: MAX_ROWS,
+      limitEnforced: MAX_QUERY_RESULTS,
     };
   } catch (error) {
     logger.error("Error running BigQuery query:", error);
@@ -127,4 +138,3 @@ export const listPublicDatasetsHandler = async () => {
     );
   }
 };
-

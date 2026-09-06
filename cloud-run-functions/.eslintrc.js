@@ -11,6 +11,9 @@ module.exports = {
     "plugin:import/typescript",
     "google",
     "plugin:@typescript-eslint/recommended",
+    // Must stay last: disables every stylistic rule Prettier owns, so the
+    // formatter and the linter cannot contradict each other.
+    "prettier",
   ],
   parser: "@typescript-eslint/parser",
   parserOptions: {
@@ -23,11 +26,8 @@ module.exports = {
   ],
   plugins: ["@typescript-eslint", "import"],
   rules: {
-    "quotes": ["error", "double"],
+    // Formatting rules (quotes, spacing, indent, line length, operator
+    // breaks) are deliberately absent — Prettier owns those now.
     "import/no-unresolved": 0,
-    "object-curly-spacing": ["error", "always"],
-    "indent": "off",
-    "operator-linebreak": "off",
-    "max-len": "off",
   },
 };

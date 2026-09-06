@@ -1,16 +1,18 @@
 import * as logger from "firebase-functions/logger";
 import { HttpsError, CallableRequest } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
+import {
+  DEFAULT_SIGNED_URL_EXPIRY_SECONDS,
+  MAX_SIGNED_URL_EXPIRY_SECONDS,
+  STORAGE_PATHS,
+} from "@shared/constants";
 
 export const getCatImageUrlHandler = async (request: CallableRequest) => {
   logger.info("onCallTrigger!🎇🎇🎇", { structuredData: true });
   const statusCode = request.data.statusCode;
 
   if (!statusCode) {
-    throw new HttpsError(
-      "invalid-argument",
-      "Status code is required!🎇🎇🎇"
-    );
+    throw new HttpsError("invalid-argument", "Status code is required!🎇🎇🎇");
   }
 
   return {
@@ -21,11 +23,35 @@ export const getCatImageUrlHandler = async (request: CallableRequest) => {
 
 export const getSignedUrlHandler = async (request: CallableRequest) => {
   const fileName = request.data.fileName;
-  const expiresIn = request.data.expiresIn || 3600; // Default 1 hour
 
-  if (!fileName) {
+  if (!fileName || typeof fileName !== "string") {
     throw new HttpsError("invalid-argument", "File name is required");
   }
+
+  // A signed URL is signed at the GCS level by this function's service
+  // account, so it bypasses storage.rules completely. Without this check any
+  // caller could mint a read URL for any object in the bucket, so restrict
+  // signing to the demo prefixes and reject traversal.
+  const allowedPrefixes = Object.values(STORAGE_PATHS);
+  const isAllowedPath =
+    !fileName.includes("..") &&
+    allowedPrefixes.some((prefix) => fileName.startsWith(prefix));
+
+  if (!isAllowedPath) {
+    throw new HttpsError(
+      "permission-denied",
+      `File name must start with one of: ${allowedPrefixes.join(", ")}`
+    );
+  }
+
+  // Clamp the caller-supplied lifetime so a URL cannot be minted to outlive
+  // the demo it belongs to.
+  const requestedExpiry =
+    Number(request.data.expiresIn) || DEFAULT_SIGNED_URL_EXPIRY_SECONDS;
+  const expiresIn = Math.min(
+    Math.max(Math.floor(requestedExpiry), 1),
+    MAX_SIGNED_URL_EXPIRY_SECONDS
+  );
 
   try {
     logger.info(`Generating signed URL for file: ${fileName}`);
@@ -61,4 +87,3 @@ export const getSignedUrlHandler = async (request: CallableRequest) => {
     );
   }
 };
-

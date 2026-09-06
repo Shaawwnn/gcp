@@ -11,6 +11,7 @@ A simple TypeScript Express application designed to help me learn Google Cloud R
 ## Overview
 
 This project demonstrates how to:
+
 - Build a TypeScript Express application
 - Containerize it with Docker
 - Deploy it to Google Cloud Run
@@ -42,43 +43,50 @@ cloud-run/
 
 ### Prerequisites
 
-- Node.js 22+ 
+- Node.js 22+
 - Yarn package manager
 - TypeScript
 
 ### Setup
 
 1. Install dependencies:
+
 ```bash
 yarn install
 ```
 
 2. Run in development mode:
+
 ```bash
 yarn dev
 ```
 
 3. Or run with auto-reload:
+
 ```bash
 yarn dev:watch
 ```
 
 4. Type check (without building):
+
 ```bash
 yarn type-check
 ```
 
 5. Type check with watch mode:
+
 ```bash
 yarn type-check:watch
 ```
 
 6. Build for production:
+
 ```bash
 yarn build
 ```
 
 7. Start production build:
+
 ```bash
 yarn start
 ```
@@ -86,16 +94,19 @@ yarn start
 ## Docker Development
 
 ### Build the container:
+
 ```bash
 docker build -t cloud-run .
 ```
 
 ### Run locally:
+
 ```bash
 docker run -p 8080:8080 cloud-run
 ```
 
 ### Pull and run the published image:
+
 ```bash
 docker pull shawnalberto/cloud-run
 docker run -p 8080:8080 shawnalberto/cloud-run
@@ -112,11 +123,13 @@ docker run -p 8080:8080 shawnalberto/cloud-run
 ### Quick Deploy (Recommended):
 
 1. Set your project ID:
+
 ```bash
 export PROJECT_ID=your-project-id
 ```
 
 2. Deploy with source (builds and deploys automatically):
+
 ```bash
 gcloud run deploy cloud-run-learning \
   --source . \
@@ -128,12 +141,14 @@ gcloud run deploy cloud-run-learning \
 ### Manual Deploy:
 
 1. Build and push to Container Registry:
+
 ```bash
 docker build -t gcr.io/$PROJECT_ID/cloud-run-learning .
 docker push gcr.io/$PROJECT_ID/cloud-run-learning
 ```
 
 2. Deploy to Cloud Run:
+
 ```bash
 gcloud run deploy cloud-run-learning \
   --image gcr.io/$PROJECT_ID/cloud-run-learning \
@@ -146,16 +161,9 @@ gcloud run deploy cloud-run-learning \
 
 1. Update the `PROJECT_ID` in `service.yaml`
 2. Deploy:
+
 ```bash
 gcloud run services replace service.yaml
 ```
 
 **Note**: The `service.yaml` approach is recommended for production deployments as it provides version-controlled, declarative configuration.
-
-
-
-
-
-
-
-
