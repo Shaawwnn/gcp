@@ -20,7 +20,7 @@ steps:
       [
         "build",
         "-t",
-        "us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/cloud-run-learning:$BUILD_ID",
+        "asia-east1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/cloud-run-learning:$BUILD_ID",
         ".",
       ]
     dir: "cloud-run"
@@ -31,7 +31,7 @@ steps:
     args:
       [
         "push",
-        "us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/cloud-run-learning:$BUILD_ID",
+        "asia-east1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/cloud-run-learning:$BUILD_ID",
       ]
 
   # Step 4: Deploy Cloud Run service
@@ -43,9 +43,9 @@ steps:
         "deploy",
         "cloud-run-learning",
         "--image",
-        "us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/cloud-run-learning:$BUILD_ID",
+        "asia-east1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/cloud-run-learning:$BUILD_ID",
         "--region",
-        "us-central1",
+        "asia-east1",
         "--platform",
         "managed",
         "--allow-unauthenticated",
@@ -53,7 +53,7 @@ steps:
 
   # Step 5: Build Next.js client
   - id: "build-nextjs"
-    name: "us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/nextjs:v1"
+    name: "asia-east1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/nextjs:v1"
     args: ["cd client && yarn build"]
 
   # Step 6: Build Cloud Run Functions
@@ -70,7 +70,7 @@ steps:
 
   # Step 8: Deploy to Hosting Preview Channel and Save to Firestore
   - id: "deploy-and-save-preview"
-    name: "us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/firebase:v1"
+    name: "asia-east1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/firebase:v1"
     entrypoint: "bash"
     args:
       - "/workspace/scripts/deploy-preview-channel.sh"

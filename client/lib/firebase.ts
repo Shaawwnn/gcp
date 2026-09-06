@@ -19,6 +19,8 @@ import {
   Functions,
 } from "firebase/functions";
 
+import { GCP_REGION } from "@shared/constants";
+
 import { firebaseConfig } from "./firebaseConfig";
 
 // Initialize Firebase app only if it hasn't been initialized
@@ -26,8 +28,10 @@ const app: FirebaseApp =
   getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 export const db = getFirestore(app);
 
-// Get Firebase Functions
-export const functions: Functions = getFunctions(app);
+// Get Firebase Functions.
+// The region argument is required: getFunctions() defaults to us-central1, so
+// omitting it here silently points every callable at the wrong region.
+export const functions: Functions = getFunctions(app, GCP_REGION);
 
 // Connect to emulator in development (optional)
 if (process.env.NODE_ENV === "development" && typeof window !== "undefined") {

@@ -32,7 +32,7 @@ fi
 # Configuration
 IMAGE_NAME="nextjs"
 REPOSITORY="cloud-run-apps"
-LOCATION="us-central1"
+LOCATION="asia-east1"
 FULL_IMAGE_NAME="${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE_NAME}:v1"
 
 echo -e "${BLUE}Project ID:${NC} $PROJECT_ID"
@@ -54,7 +54,7 @@ if [ $? -eq 0 ]; then
   echo "    args: ['cd client && yarn build']"
   echo ""
   echo -e "${BLUE}Or with \$PROJECT_ID substitution:${NC}"
-  echo "  - name: 'us-central1-docker.pkg.dev/\$PROJECT_ID/cloud-run-apps/nextjs:v1'"
+  echo "  - name: 'asia-east1-docker.pkg.dev/\$PROJECT_ID/cloud-run-apps/nextjs:v1'"
   echo "    args: ['cd client && yarn build']"
 else
   echo -e "${YELLOW}❌ Push failed${NC}"

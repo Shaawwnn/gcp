@@ -31,16 +31,16 @@ Or manually:
 
 ```bash
 # Build
-docker build -t us-central1-docker.pkg.dev/PROJECT_ID/cloud-run-apps/nextjs:v1 builders/nextjs/
+docker build -t asia-east1-docker.pkg.dev/PROJECT_ID/cloud-run-apps/nextjs:v1 builders/nextjs/
 
 # Push
-docker push us-central1-docker.pkg.dev/PROJECT_ID/cloud-run-apps/nextjs:v1
+docker push asia-east1-docker.pkg.dev/PROJECT_ID/cloud-run-apps/nextjs:v1
 ```
 
 ## Usage in clouddeploy.yaml
 
 ```yaml
-- name: "us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/nextjs:v1"
+- name: "asia-east1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/nextjs:v1"
   args: ["cd client && yarn build"]
 ```
 

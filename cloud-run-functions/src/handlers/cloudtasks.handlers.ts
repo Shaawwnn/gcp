@@ -14,7 +14,7 @@ import type {
   TaskData,
   CloudTask as SharedCloudTask,
 } from "@shared/types";
-import { TASK_TYPES } from "@shared/constants";
+import { GCP_REGION, TASK_TYPES } from "@shared/constants";
 export type CloudTask = protos.google.cloud.tasks.v2.ITask;
 
 // Initialize Cloud Tasks client
@@ -157,7 +157,10 @@ export const createTaskHandler = async (
   try {
     // Get project and location from environment
     const project = process.env.GCLOUD_PROJECT;
-    const location = process.env.FUNCTION_REGION || "us-central1";
+    // FUNCTION_REGION is a Gen 1 variable and is unset on Gen 2, so in
+    // practice this is always GCP_REGION. It also picks the Cloud Tasks
+    // queue location below, which must be the region the queue was created in.
+    const location = process.env.FUNCTION_REGION || GCP_REGION;
     const queue = "default"; // Using the default queue
 
     // Create task document in Firestore

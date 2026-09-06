@@ -23,16 +23,16 @@ Or manually:
 
 ```bash
 # Build
-docker build -t us-central1-docker.pkg.dev/future-cat-475815-c2/cloud-run-apps/firebase:latest builders/firebase/
+docker build -t asia-east1-docker.pkg.dev/future-cat-475815-c2/cloud-run-apps/firebase:latest builders/firebase/
 
 # Push
-docker push us-central1-docker.pkg.dev/future-cat-475815-c2/cloud-run-apps/firebase:latest
+docker push asia-east1-docker.pkg.dev/future-cat-475815-c2/cloud-run-apps/firebase:latest
 ```
 
 ## Usage in clouddeploy.yaml
 
 ```yaml
-- name: "us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/firebase"
+- name: "asia-east1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/firebase"
   args: ["deploy", "--only", "functions"]
 ```
 

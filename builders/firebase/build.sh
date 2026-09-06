@@ -30,7 +30,7 @@ if [ -z "$PROJECT_ID" ]; then
 fi
 
 # Configuration
-LOCATION="us-central1"
+LOCATION="asia-east1"
 IMAGE_NAME="firebase"
 REPOSITORY="cloud-run-apps"
 VERSION="v1"
@@ -55,7 +55,7 @@ if [ $? -eq 0 ]; then
   echo "    args: ['deploy', '--only', 'functions']"
   echo ""
   echo -e "${BLUE}Or with \$PROJECT_ID substitution:${NC}"
-  echo "  - name: 'us-central1-docker.pkg.dev/\$PROJECT_ID/cloud-run-apps/firebase'"
+  echo "  - name: 'asia-east1-docker.pkg.dev/\$PROJECT_ID/cloud-run-apps/firebase'"
   echo "    args: ['deploy', '--only', 'functions']"
 else
   echo -e "${YELLOW}❌ Push failed${NC}"

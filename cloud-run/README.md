@@ -134,7 +134,7 @@ export PROJECT_ID=your-project-id
 gcloud run deploy cloud-run-learning \
   --source . \
   --platform managed \
-  --region us-central1 \
+  --region asia-east1 \
   --allow-unauthenticated
 ```
 
@@ -153,7 +153,7 @@ docker push gcr.io/$PROJECT_ID/cloud-run-learning
 gcloud run deploy cloud-run-learning \
   --image gcr.io/$PROJECT_ID/cloud-run-learning \
   --platform managed \
-  --region us-central1 \
+  --region asia-east1 \
   --allow-unauthenticated
 ```
 

@@ -5,3 +5,4 @@
 export * from "./cloud-tasks.constants";
 export * from "./bigquery.constants";
 export * from "./storage.constants";
+export * from "./regions.constants";

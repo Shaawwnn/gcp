@@ -47,11 +47,11 @@ This will build and push both builders to Artifact Registry.
 ```yaml
 steps:
   # Use Firebase builder
-  - name: "us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/firebase:v1"
+  - name: "asia-east1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/firebase:v1"
     args: ["deploy", "--only", "functions"]
 
   # Use Next.js builder
-  - name: "us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/nextjs:v1"
+  - name: "asia-east1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/nextjs:v1"
     args: ["cd client && yarn build"]
 ```
 
@@ -76,7 +76,7 @@ steps:
 
 ```yaml
 # Use pre-built image (instant!)
-- name: "us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/firebase:v1"
+- name: "asia-east1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/firebase:v1"
   args: ["deploy"]
 ```
 
@@ -138,7 +138,7 @@ vi builders/nextjs/Dockerfile
 **Artifact Registry:**
 
 ```
-us-central1-docker.pkg.dev/
+asia-east1-docker.pkg.dev/
 └── future-cat-475815-c2/
     └── cloud-run-apps/
         ├── firebase:v1  (~500MB)

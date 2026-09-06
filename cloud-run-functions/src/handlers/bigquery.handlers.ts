@@ -53,6 +53,11 @@ export const runBigQueryHandler = async (request: CallableRequest) => {
 
     const options = {
       query: modifiedQuery,
+      // Deliberately NOT GCP_REGION. A BigQuery job runs in the location of the
+      // data it reads, and every dataset in SAMPLE_QUERIES lives under
+      // bigquery-public-data in the US. Pointing this at asia-east1 with the
+      // rest of the project fails every query with "dataset not found in
+      // location". The cross-region read is the intended behaviour here.
       location: "US",
       // Hard cost ceiling. The row limit above caps what comes back, not what
       // gets scanned, which is what BigQuery actually bills for.

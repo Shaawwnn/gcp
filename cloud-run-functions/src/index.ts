@@ -7,6 +7,7 @@ import { onCall, onRequest } from "firebase-functions/v2/https";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import { onMessagePublished } from "firebase-functions/v2/pubsub";
 import * as admin from "firebase-admin";
+import { GCP_REGION } from "@shared/constants";
 
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -14,7 +15,7 @@ admin.initializeApp();
 // Set global options for all functions (Gen 2)
 setGlobalOptions({
   maxInstances: 10,
-  region: "us-central1",
+  region: GCP_REGION,
   memory: "512MiB",
 });
 
