@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "commonjs",
+    // nodenext rather than commonjs: the latter implies moduleResolution
+    // node10, which is deprecated in TS 5 and removed in 7. With no "type"
+    // field in package.json this still emits CommonJS, as dist/ requires.
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "lib": ["ES2020"],
     "outDir": "./dist",
     "rootDir": "./src",
