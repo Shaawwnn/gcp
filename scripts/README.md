@@ -1,42 +1,25 @@
 # Scripts Directory
 
-This directory contains setup and utility scripts for the GCP Learning Project.
+Deploy-time scripts for the GCP Learning Project.
 
-## Setup Scripts
+The one-time project setup scripts that used to live here
+(`setup-artifact-registry.sh`, `create-cloudbuild-sa.sh`,
+`setup-cloudbuild-permissions.sh`) were removed once `terraform/` took over that
+job — see `terraform/README.md`. `git log` has them if you need the history.
 
-### `setup-artifact-registry.sh`
+## `deploy-preview-channel.sh`
 
-Creates the Artifact Registry repository for storing Docker images.
+Deploys a Firebase Hosting preview channel named after `$TAG_NAME` and records
+it in Firestore via `save-preview-to-firestore.js`. Called by
+`clouddeploybeta.yaml` on tag builds — not intended to be run by hand.
 
-**Usage:**
+Needs `scripts/node_modules` (firebase-admin), which the build installs with
+`npm install --prefix scripts`.
 
-```bash
-./scripts/setup-artifact-registry.sh
-```
+## `save-preview-to-firestore.js`
 
-**What it does:**
-
-- Creates a Docker repository named `cloud-run-apps` in `us-central1`
-- Checks if the repository already exists (safe to run multiple times)
-- Displays the repository URL and next steps
-
-**Requirements:**
-
-- gcloud CLI installed and authenticated
-- Active GCP project configured
-
-**Run this ONCE before your first Cloud Build deployment!**
-
----
-
-## Future Scripts
-
-Other scripts will be added here as we set up more GCP services:
-
-- `setup-cloud-build-triggers.sh` - Set up automatic build triggers
-- `setup-cloud-run-permissions.sh` - Configure IAM permissions
-- `cleanup-old-images.sh` - Clean up old container images
-- etc.
+Writes the preview channel URL and metadata into the `preview_channels`
+collection. Invoked by `deploy-preview-channel.sh`, not directly.
 
 ---
 
