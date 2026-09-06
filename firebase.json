@@ -21,6 +21,7 @@
         "source": "/functions/helloWorld",
         "function": {
           "functionId": "helloWorldV2",
+          "region": "asia-east1",
           "pinTag": true
         }
       },
@@ -28,7 +29,7 @@
         "source": "/api/**",
         "run": {
           "serviceId": "cloud-run-learning",
-          "region": "us-central1",
+          "region": "asia-east1",
           "pinTag": true
         }
       },
