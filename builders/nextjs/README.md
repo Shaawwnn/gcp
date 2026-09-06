@@ -1,41 +1,40 @@
 # Next.js Cloud Builder
 
-Custom Cloud Builder for Next.js application builds.
-
-## What This Is
-
-A Docker image optimized for building Next.js applications in Cloud Build.
+Custom Cloud Builder for building the Next.js client in Cloud Build.
 
 ## Contents
 
-- **Dockerfile** - Builds the Next.js builder image with necessary tools
-- **build.sh** - Script to build and push the image to Artifact Registry
+- **Dockerfile** - Builds the image (`node:22-slim` + git, ca-certificates, turbo)
+- **build.sh** - Builds and pushes the image to Artifact Registry
 
-## Features
+## What's Actually In It
 
-- ✅ Node.js 22 LTS (Alpine-based for smaller size)
-- ✅ Git included (for package dependencies from git repos)
-- ✅ CA certificates (for HTTPS package downloads)
-- ✅ Turbo pre-installed (optional monorepo tool)
-- ✅ Optimized for CI/CD builds
+- ✅ Node.js 22 (**Debian slim**, not Alpine)
+- ✅ `git` — for any git-sourced package dependencies
+- ✅ `ca-certificates` — for HTTPS package downloads
+- ✅ `turbo` installed globally (unused by this repo today; kept for monorepo work)
+- ✅ `WORKDIR /workspace`, entrypoint `bash -c` so steps read as shell one-liners
 
 ## Building the Image
 
-Build and push to Artifact Registry:
+Run from the **repo root** — the script passes `builders/nextjs/` as the Docker
+build context, so it fails from anywhere else:
 
 ```bash
 ./builders/nextjs/build.sh
 ```
 
-Or manually:
+It builds for **linux/amd64 and linux/arm64** and pushes in one step:
 
 ```bash
-# Build
-docker build -t asia-east1-docker.pkg.dev/PROJECT_ID/cloud-run-apps/nextjs:v1 builders/nextjs/
-
-# Push
-docker push asia-east1-docker.pkg.dev/PROJECT_ID/cloud-run-apps/nextjs:v1
+docker buildx build --platform linux/amd64,linux/arm64 \
+  -t asia-east1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/nextjs:v1 \
+  --push builders/nextjs/
 ```
+
+> Don't substitute a plain `docker build`. On an Apple Silicon Mac that produces
+> an arm64-only image, and Cloud Build workers are amd64 — the build then fails
+> at pull time with a manifest error. `buildx` with both platforms is the point.
 
 ## Usage in clouddeploy.yaml
 
@@ -44,20 +43,9 @@ docker push asia-east1-docker.pkg.dev/PROJECT_ID/cloud-run-apps/nextjs:v1
   args: ["cd client && yarn build"]
 ```
 
-## What It Does
-
-1. Uses Node.js 22 slim image
-2. Installs git and certificates
-3. Pre-installs turbo (optional)
-4. Sets working directory to `/workspace`
-5. Runs your build commands
-
-## Size
-
-~150MB (smaller than installing dependencies each time)
+The entrypoint is `bash -c`, which is why the whole command is a single string.
 
 ## Benefits
 
-- **Faster builds** - Image is cached, no repeated installations
-- **Consistent** - Same tools across all builds
-- **Cleaner** - Dedicated image for Next.js builds
+- **Faster builds** - image is cached, no repeated tool installation
+- **Consistent** - same Node version across all builds

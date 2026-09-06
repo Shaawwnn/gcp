@@ -51,11 +51,16 @@ gcloud auth application-default set-quota-project future-cat-475815-c2
 # 1. Create the state bucket (local state, one time).
 cd terraform/bootstrap && terraform init && terraform apply
 
-# 2. Point the main config at it.
+# 2. Back up to terraform/ -- everything from here on runs there, NOT in
+#    bootstrap/. Forgetting this is the most common trip-up.
 cd .. && terraform init
 ```
 
 ## Adopting the existing resources
+
+> Run everything in this section from `terraform/`, **not** `terraform/bootstrap/`.
+> The bootstrap config contains only the state bucket, so an import there fails
+> with `resource address ... does not exist in the configuration`.
 
 The project already exists, so most resources here are **live**. Import them
 before the first apply or the plan will try to create them and fail with

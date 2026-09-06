@@ -4,52 +4,69 @@ Custom Cloud Builder for Firebase CLI operations.
 
 ## What This Is
 
-A Docker image with Firebase CLI pre-installed, optimized for Cloud Build deployments.
+A Docker image with the Firebase CLI pre-installed, so Cloud Build doesn't spend
+2-3 minutes on `npm install -g firebase-tools` every deploy.
 
 ## Contents
 
-- **Dockerfile** - Builds the Firebase builder image
-- **firebase.bash** - Entry script that handles authentication and runs firebase commands
+- **Dockerfile** - Builds the image (`node:lts-alpine3.20` + bash, jq, firebase-tools)
+- **firebase.bash** - Entrypoint; handles Cloud Build auth and forwards args to `firebase`
+- **build.sh** - Builds and pushes the image to Artifact Registry
 
 ## Building the Image
 
-Build and push to Artifact Registry:
+Run from the **repo root** — the script passes `builders/firebase/` as the Docker
+build context, so it fails from anywhere else:
 
 ```bash
-./build.sh
+./builders/firebase/build.sh
 ```
 
-Or manually:
+It builds for **linux/amd64 and linux/arm64** and pushes in one step:
 
 ```bash
-# Build
-docker build -t asia-east1-docker.pkg.dev/future-cat-475815-c2/cloud-run-apps/firebase:latest builders/firebase/
-
-# Push
-docker push asia-east1-docker.pkg.dev/future-cat-475815-c2/cloud-run-apps/firebase:latest
+docker buildx build --platform linux/amd64,linux/arm64 \
+  -t asia-east1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/firebase:v1 \
+  --push builders/firebase/
 ```
+
+> Don't substitute a plain `docker build`. On an Apple Silicon Mac that produces
+> an arm64-only image, and Cloud Build workers are amd64 — the build then fails
+> at pull time with a manifest error. `buildx` with both platforms is the point.
+
+The tag is `:v1`, and `clouddeploy.yaml` pins that exact tag. An image pushed as
+`:latest` is never used.
 
 ## Usage in clouddeploy.yaml
 
+As actually wired today:
+
 ```yaml
-- name: "asia-east1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/firebase"
-  args: ["deploy", "--only", "functions"]
+- name: "asia-east1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/firebase:v1"
+  args:
+    [
+      "deploy",
+      "--only",
+      "functions,hosting",
+      "--non-interactive",
+      "--project",
+      "$PROJECT_ID",
+    ]
 ```
 
-## Features
+`clouddeploybeta.yaml` uses the same image but overrides the entrypoint to run
+`scripts/deploy-preview-channel.sh`.
 
-- ✅ Firebase CLI pre-installed
-- ✅ Emulators pre-cached (faster cold starts)
-- ✅ Automatic authentication in Cloud Build
-- ✅ Lightweight Alpine-based image
-- ✅ Python, Java, and Node.js included
+## What's Actually In It
 
-## Size
+- ✅ Firebase CLI (`firebase-tools`, latest at build time)
+- ✅ `bash` and `jq`
+- ✅ Alpine-based, Node LTS
 
-~500MB (vs ~200MB each time you install firebase-tools)
+Not included: emulators, Python, Java. This image is for **deploying** only —
+emulators run locally via `yarn emulators`, not in Cloud Build.
 
 ## Benefits
 
-- **Faster builds** - No need to install firebase-tools every time
-- **Consistent** - Same version across all builds
-- **Cached** - Emulators pre-downloaded
+- **Faster builds** - no `firebase-tools` install per build
+- **Consistent** - same CLI version across builds, until you rebuild the image

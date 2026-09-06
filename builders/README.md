@@ -6,16 +6,15 @@ This directory contains custom Docker images optimized for Cloud Build deploymen
 
 ### 1. **Firebase** (`firebase:v1`)
 
-- Firebase CLI with emulators pre-cached
+- Firebase CLI (`firebase-tools`) on Alpine, plus bash and jq
 - Used for deploying Cloud Functions and Firebase Hosting
-- Size: ~500MB
+- No emulators, Python or Java — deploy-only image
 - [Documentation](./firebase/README.md)
 
 ### 2. **Next.js** (`nextjs:v1`)
 
-- Node.js with build tools for Next.js applications
+- Node.js 22 (Debian slim) with git, ca-certificates and turbo
 - Used for building the client application
-- Size: ~150MB
 - [Documentation](./nextjs/README.md)
 
 ---
@@ -28,7 +27,9 @@ This directory contains custom Docker images optimized for Cloud Build deploymen
 ./builders/build-all.sh
 ```
 
-This will build and push both builders to Artifact Registry.
+Builds and pushes both builders to Artifact Registry. Run it from the **repo
+root** — it and the two scripts it calls use repo-root-relative Docker build
+contexts.
 
 ### Build Individual Builders
 
@@ -48,7 +49,15 @@ This will build and push both builders to Artifact Registry.
 steps:
   # Use Firebase builder
   - name: "asia-east1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/firebase:v1"
-    args: ["deploy", "--only", "functions"]
+    args:
+      [
+        "deploy",
+        "--only",
+        "functions,hosting",
+        "--non-interactive",
+        "--project",
+        "$PROJECT_ID",
+      ]
 
   # Use Next.js builder
   - name: "asia-east1-docker.pkg.dev/$PROJECT_ID/cloud-run-apps/nextjs:v1"
@@ -89,7 +98,7 @@ steps:
 1. **Faster Builds**
    - No repeated installations
    - Images are cached by Cloud Build
-   - Pre-cached emulators and dependencies
+   - Tools baked in at image build time
 
 2. **Consistent Environments**
    - Same tools across all builds
@@ -120,9 +129,9 @@ steps:
 # Edit Dockerfile (e.g., upgrade Node.js version)
 vi builders/nextjs/Dockerfile
 
-# Update version in build.sh
-# Change: IMAGE_NAME="nextjs:v1"
-# To:     IMAGE_NAME="nextjs:v2"
+# Bump the version in build.sh. The two scripts differ:
+#   builders/firebase/build.sh -> VERSION="v1"
+#   builders/nextjs/build.sh   -> the ":v1" is inline in FULL_IMAGE_NAME
 
 # Build new version
 ./builders/nextjs/build.sh
@@ -141,8 +150,8 @@ vi builders/nextjs/Dockerfile
 asia-east1-docker.pkg.dev/
 └── future-cat-475815-c2/
     └── cloud-run-apps/
-        ├── firebase:v1  (~500MB)
-        ├── nextjs:v1    (~150MB)
+        ├── firebase:v1
+        ├── nextjs:v1
         └── cloud-run-learning:*  (your app images)
 ```
 
